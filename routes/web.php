@@ -30,6 +30,10 @@ Route::get('/add-client', function () {
     return view('client/add-client');
 })->middleware(['auth', 'verified'])->name('add-client');
 
+Route::get('/profile-client', function () {
+    return view('client/profile-client');
+})->middleware(['auth', 'verified'])->name('profile-client');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
