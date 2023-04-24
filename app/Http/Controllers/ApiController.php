@@ -34,12 +34,13 @@ class ApiController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    private function getClientData(): array
+    public function getClientData(): array
     {
-        $clients = Client::getByPagedQuery(
-            $this->apiGateway,
-            (new Builder ())
-                ->top(50)
+
+        $clients = Client::getByQueryBuilder($this->apiGateway,
+            (new Builder())
+                ->where('status', 'ACTIVE'),
+            50
         );
         return !empty($clients) ? $clients : [];
     }
@@ -47,11 +48,22 @@ class ApiController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    private function getPetDataForClient(int $clientId): array
+    public function getClientById(int $clientId): ?Client
     {
-        $pets = Pet::getAll($this->apiGateway);
-
         $client = Client::getById($this->apiGateway, $clientId);
+        return (bool)$client ? $client : null;
+    }
+
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
+    public function getPetDataForClient(?Client $client): array
+    {
+        if (is_null($client)) {
+            return [];
+        }
+
+        $pets = Pet::getAll($this->apiGateway);
 
         if (empty($pets)) {
             return [];
@@ -101,19 +113,58 @@ class ApiController extends Controller
             "status" => "ACTIVE"
         );
     }
-    private function searchClientByFirstName()
-    {
 
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
+    public function searchClientByAllParam(string $firstName, string $middleName, string $lastName): array
+    {
+        $clients = Client::getByQueryBuilder($this->apiGateway,
+            (new Builder())
+                ->where('status', 'ACTIVE')
+                ->where('last_name', $lastName)
+                ->where('first_name', $firstName)
+                ->where('middle_name', $middleName),
+            50
+        );
+
+        return (bool)$clients ? $clients : [];
     }
 
-    private function searchClientByMiddleName()
+    public function searchClientByMiddleName(string $middleName)
     {
+        $clients = Client::getByQueryBuilder($this->apiGateway,
+            (new Builder())
+                ->where('status', 'ACTIVE')
+                ->where('middle_name', $middleName),
+            50
+        );
 
+        return (bool)$clients ? $clients : [];
     }
 
-    private function searchClientByLastName()
+    public function searchClientByLastName(string $lastName)
     {
+        $clients = Client::getByQueryBuilder($this->apiGateway,
+            (new Builder())
+                ->where('status', 'ACTIVE')
+                ->where('last_name', $lastName),
+            50
+        );
 
+        return (bool)$clients ? $clients : [];
+    }
+
+    public function searchClientByFirstName(string $firstName)
+    {
+        $clients = Client::getByQueryBuilder($this->apiGateway,
+            (new Builder())
+                ->where('status', 'ACTIVE')
+                ->where('first_name', $firstName),
+            50
+        );
+
+        return (bool)$clients ? $clients : [];
     }
 
     private function deleteClient(int $clientId)

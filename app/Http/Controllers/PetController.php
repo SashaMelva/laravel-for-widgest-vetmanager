@@ -6,5 +6,9 @@ use Illuminate\Http\Request;
 
 class PetController extends Controller
 {
-    //
+    public function viewAddPet()
+    {
+
+    }
+
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,21 +19,24 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [ClientController::class, 'allDataClient'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/api-setting', function () {
     return view('api-setting');
 })->middleware(['auth', 'verified'])->name('api-setting');
 
-Route::get('/add-client', function () {
-    return view('client/add-client');
-})->middleware(['auth', 'verified'])->name('add-client');
+Route::get('/add-client', [ClientController::class, 'addClient'])->middleware(['auth', 'verified'])->name('add-client');
 
-Route::get('/profile-client', function () {
-    return view('client/profile-client');
-})->middleware(['auth', 'verified'])->name('profile-client');
+Route::get('/edit-client/{id}', [ClientController::class, 'editClient'])->middleware(['auth', 'verified'])->name('edit-client');
+
+Route::get('/profile-client/{id}', [ClientController::class, 'profileClient'])->middleware(['auth', 'verified'])->name('profile-client');
+
+Route::get('/search-client', [ClientController::class, 'searchClient'])->middleware(['auth', 'verified'])->name('search-client');
+
+
+Route::get('/add-pet', function () {
+    return view('pet/add-pet/');
+})->middleware(['auth', 'verified'])->name('add-pet');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
