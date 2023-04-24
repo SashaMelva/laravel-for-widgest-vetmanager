@@ -20,18 +20,17 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <th scope="row"
-                            class="px-6 py-5 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                            1
-                        </th>
-                        <td class="px-6 py-5"> </td>
-                        <td class="px-6 py-5"> </td>
-                    </tr>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row"
+                                class="px-6 py-5 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                1
+                            </th>
+                            <td class="px-6 py-5">{{ $apiSetting['domainName'] }}</td>
+                            <td class="px-6 py-5">{{ $apiSetting['apiKey'] }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
     </div>
 </x-app-layout>

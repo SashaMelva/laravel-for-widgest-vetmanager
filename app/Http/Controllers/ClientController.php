@@ -19,7 +19,8 @@ class ClientController extends Controller
             'searchData' => [
                 'lastName' => "",
                 'firstName' => "",
-                'middleName' => ""]
+                'middleName' => ""
+            ]
         ]);
     }
 
@@ -44,7 +45,13 @@ class ClientController extends Controller
 
     public function addClient()
     {
-        return view('client/add-client', ['client' => null]);
+        return view('client/add-client', [ 'client' => null
+//            'client' => [
+//                'lastName' => "",
+//                'firstName' => "",
+//                'middleName' => ""
+//            ]
+        ]);
     }
 
     public function deletClient(int $clientId)

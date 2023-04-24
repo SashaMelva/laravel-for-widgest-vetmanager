@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Otis22\VetmanagerRestApi\Query\Builder;
 use VetmanagerApiGateway\ApiGateway;
 use VetmanagerApiGateway\DO\DTO\DAO\Client;
 use VetmanagerApiGateway\DO\DTO\DAO\Pet;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
-use VetmanagerApiGateway\Exception\VetmanagerApiGatewayResponseEmptyException;
-use VetmanagerApiGateway\Exception\VetmanagerApiGatewayResponseException;
 
 class ApiController extends Controller
 {
     private ApiGateway $apiGateway;
+
 
     /**
      * @throws VetmanagerApiGatewayRequestException
@@ -31,17 +29,27 @@ class ApiController extends Controller
         );
     }
 
+    public function getApiData()
+    {
+        $api = [
+            'domainName' => 'sashamel',
+            'apiKey' => '58160e1141a1abcfb54ecc42266c7d84'
+        ];
+
+        return view('api-setting', ['apiSetting' => $api]);
+    }
+
     /**
      * @throws VetmanagerApiGatewayException
      */
     public function getClientData(): array
     {
-
         $clients = Client::getByQueryBuilder($this->apiGateway,
             (new Builder())
                 ->where('status', 'ACTIVE'),
             50
         );
+
         return !empty($clients) ? $clients : [];
     }
 
