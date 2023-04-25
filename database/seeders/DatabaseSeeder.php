@@ -14,16 +14,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
-            'name' => 'client',
-            'email' => 'client@client.com',
-            'password' => Hash::make('secret'),
-        ]);
 
-        DB::table('users')->insert([
-            'name' => 'client',
-            'email' => 'client@client.com',
-            'password' => Hash::make('secret'),
+        DB::table('api_settings')->insert([
+            'url' => 'http://sashamel.vetmanager.ru',
+            'key' => '58160e1141a1abcfb54ecc42266c7d84',
         ]);
 
         DB::table('users')->insert([

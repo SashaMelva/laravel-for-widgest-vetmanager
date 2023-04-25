@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostNewClientRequest;
 use Illuminate\Http\Request;
-use JetBrains\PhpStorm\NoReturn;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 
 class ClientController extends Controller
 {
-    /**
-     * @throws VetmanagerApiGatewayException
-     */
+
     public function allDataClient()
     {
-        $clients = (new ApiController())->getClientData();
+        $clients = (new ViewDataController())->getClientData();
         return view('dashboard', [
             'clients' => $clients,
             'searchData' => [
@@ -27,23 +25,23 @@ class ClientController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function profileClient(int $clientId)
+    public function profile(int $clientId)
     {
-        $client = (new ApiController())->getClientById($clientId);
-        $pets = (new ApiController())->getPetDataForClient($client);
+        $client = (new ViewDataController())->getClientById($clientId);
+        $pets = (new ViewDataController())->getPetDataForClient($client);
         return view('client/profile-client', ['pets' => $pets, 'client' => $client]);
     }
 
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function editClient(int $clientId)
+    public function edit(int $clientId)
     {
-        $client = (new ApiController())->getClientById($clientId);
+        $client = (new ViewDataController())->getClientById($clientId);
         return view('client/add-client', ['client' => $client]);
     }
 
-    public function addClient()
+    public function add()
     {
         return view('client/add-client', [ 'client' => null
 //            'client' => [
@@ -54,19 +52,19 @@ class ClientController extends Controller
         ]);
     }
 
-    public function deletClient(int $clientId)
+    public function delet(int $clientId)
     {
-        $client = (new ApiController())->getClientById($clientId);
-        $pets = (new ApiController())->getPetDataForClient($client);
+        $client = (new ViewDataController())->getClientById($clientId);
+        $pets = (new ViewDataController())->getPetDataForClient($client);
         return view('client/profile-client', ['pets' => $pets, 'client' => $client]);
     }
 
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function searchClient(Request $request)
+    public function search(Request $request)
     {
-        $apiController = new ApiController();
+        $apiController = new ViewDataController();
         $clients = $apiController->getClientData();
 
         $lastName = trim($request->lastName);
@@ -112,5 +110,13 @@ class ClientController extends Controller
         }
 
         return $resultArray;
+    }
+
+    public function storeClient(Request $request)
+    {
+        dd($request);
+       // $validated = $request->validated();
+        dd($validated);
+
     }
 }
