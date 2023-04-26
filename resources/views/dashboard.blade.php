@@ -88,12 +88,12 @@
                                         <td class="px-6 py-5">
                                             <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                                                style="background-color: rgb(220 38 38);"
-                                               href="#">Delete</a>
+                                               href="{{ route('delete-client', $client->id) }}">Delete</a>
                                         </td>
                                         <td class="px-6 py-5">
                                             <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                                                style="background-color: rgb(22 163 74);"
-                                               href="{{route('profile-client', $client->id)}}">watch</a>
+                                               href="{{ route('profile-client', $client->id) }}">watch</a>
                                         </td>
                                     </tr>
                                 @endforeach

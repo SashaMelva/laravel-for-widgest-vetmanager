@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostNewClientRequest;
+use App\Http\Service\VetmanagerApi;
+use GuzzleHttp\Exception\GuzzleException;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 
 class ClientController extends Controller
@@ -27,9 +32,12 @@ class ClientController extends Controller
      */
     public function profile(int $clientId)
     {
-        $client = (new ViewDataController())->getClientById($clientId);
-        $pets = (new ViewDataController())->getPetDataForClient($client);
-        return view('client/profile-client', ['pets' => $pets, 'client' => $client]);
+        $viewDataController = new ViewDataController();
+
+        $client = $viewDataController->getClientByIdAndSaveId($clientId);
+        $pets = $viewDataController->getPetDataForClient($client);
+
+        return view('client/profile-client', ['pets' => $pets, 'client' => $client, 'clientId' => $clientId]);
     }
 
     /**
@@ -37,26 +45,27 @@ class ClientController extends Controller
      */
     public function edit(int $clientId)
     {
-        $client = (new ViewDataController())->getClientById($clientId);
+        $client = (new ViewDataController())->getClientByIdAndSaveId($clientId);
         return view('client/add-client', ['client' => $client]);
     }
 
-    public function add()
+    /**
+     * @throws GuzzleException
+     */
+    public function add(StorePostNewClientRequest $request)
     {
-        return view('client/add-client', [ 'client' => null
-//            'client' => [
-//                'lastName' => "",
-//                'firstName' => "",
-//                'middleName' => ""
-//            ]
-        ]);
+        $validate = $request->validated();
+        (new VetmanagerApi(Auth::user(), 'client'))->add($validate);
+        return redirect()->route('dashboard');
     }
 
-    public function delet(int $clientId)
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
+    public function deleteClient(int $clientId)
     {
-        $client = (new ViewDataController())->getClientById($clientId);
-        $pets = (new ViewDataController())->getPetDataForClient($client);
-        return view('client/profile-client', ['pets' => $pets, 'client' => $client]);
+        (new VetmanagerApi(Auth::user(), 'client'))->delete($clientId);
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -65,7 +74,6 @@ class ClientController extends Controller
     public function search(Request $request)
     {
         $apiController = new ViewDataController();
-        $clients = $apiController->getClientData();
 
         $lastName = trim($request->lastName);
         $firstName = trim($request->firstName);
@@ -75,6 +83,9 @@ class ClientController extends Controller
             $clients = $apiController->searchClientByAllParam($lastName, $firstName, $middleName);
             return view('dashboard', ['clients' => $clients]);
         }
+
+        $clients = $apiController->getClientData();
+
         if (!empty($lastName)) {
             $clientsForApi = $apiController->searchClientByLastName($lastName);
             $clients = $this->saveRepeatedArrayNameForClient($clients, $clientsForApi);
@@ -110,13 +121,5 @@ class ClientController extends Controller
         }
 
         return $resultArray;
-    }
-
-    public function storeClient(Request $request)
-    {
-        dd($request);
-       // $validated = $request->validated();
-        dd($validated);
-
     }
 }

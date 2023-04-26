@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PetController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,20 +35,20 @@ Route::get('/edit-client/{id}', [ClientController::class, 'edit'])->middleware([
 Route::get('/profile-client/{id}', [ClientController::class, 'profile'])->middleware(['auth', 'verified'])->name('profile-client');
 
 Route::get('/search-client', [ClientController::class, 'search'])->middleware(['auth', 'verified'])->name('search-client');
-Route::get('/profile-client/add-pet', function () {
-    return view('pet/add-pet/');
-})->middleware(['auth', 'verified'])->name('add-pet');
 
-Route::get('/profile-client/edit-pet', function () {
-    return view('pet/edit-pet/');
-})->middleware(['auth', 'verified'])->name('edit-pet');
+Route::get('/delete-client/{id}', [ClientController::class, 'deleteClient'])->middleware(['auth', 'verified'])->name('delete-client');
 
+Route::get('/profile-client/add-pet/{id}', [PetController::class, 'viewAddPet'])->middleware(['auth', 'verified'])->name('add-pet');
 
+Route::get('/profile-client/edit-pet/{id}', [PetController::class, 'viewEditPet'])->middleware(['auth', 'verified'])->name('edit-pet');
+
+Route::get('/profile-client/delete-pet/{id}', [PetController::class, 'deletePet'])->middleware(['auth', 'verified'])->name('delete-pet');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resources(['client' => ClientController::class, 'pet' => PetController::class,]);
 });
 
 

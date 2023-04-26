@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Otis22\VetmanagerRestApi\Query\Builder;
 use VetmanagerApiGateway\ApiGateway;
+use VetmanagerApiGateway\DO\DTO\DAO\Breed;
 use VetmanagerApiGateway\DO\DTO\DAO\Client;
 use VetmanagerApiGateway\DO\DTO\DAO\Pet;
+use VetmanagerApiGateway\DO\DTO\DAO\PetType;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 
 class ViewDataController extends Controller
 {
+    private int $clientId;
     private ApiGateway $apiGateway;
 
     public function __construct(
@@ -35,6 +37,9 @@ class ViewDataController extends Controller
         return view('api-setting', ['apiSetting' => $api]);
     }
 
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
     public function getClientData(): array
     {
         $clients = Client::getByQueryBuilder($this->apiGateway,
@@ -49,12 +54,32 @@ class ViewDataController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function getClientById(int $clientId): ?Client
+    public function getClientByIdAndSaveId(int $clientId): ?Client
     {
         $client = Client::getById($this->apiGateway, $clientId);
-        return (bool)$client ? $client : null;
+
+        if ((bool)$client) {
+            $this->clientId = $clientId;
+            return $client;
+        }
+
+        return null;
     }
 
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
+    public function getPetByIdAndSaveId(int $petId): ?Pet
+    {
+        $pet = Pet::getById($this->apiGateway, $petId);
+
+        if ((bool)$pet) {
+            //$this->clientId = $petId;
+            return $pet;
+        }
+
+        return null;
+    }
     /**
      * @throws VetmanagerApiGatewayException
      */
@@ -145,4 +170,24 @@ class ViewDataController extends Controller
         return (bool)$clients ? $clients : [];
     }
 
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
+    public function getAllTypesPet(): array
+    {
+        return PetType::getAll($this->apiGateway);
+    }
+
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
+    public function getAllBreedsPet(): array
+    {
+        return Breed::getAll($this->apiGateway);
+    }
+
+    public function deleteClientById(int $clientId)
+    {
+
+    }
 }

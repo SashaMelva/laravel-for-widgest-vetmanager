@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    {{ __("Добавление клиента") }}
+                    {{ __("Добавление питомца") }}
                 </div>
                 <form class="w-full max-w-lg">
                     <div class="flex flex-wrap -mx-3 mb-6">
@@ -28,9 +28,11 @@
                                    for="type-pet">
                                 Type
                             </label>
-                            <input
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                                id="type-pet" name="type-pet" type="text" placeholder="Jane">
+                            <select id="type-pet" name="type-pet" class="h-full rounded-md border-0 bg-transparent bg-none py-0 pl-4 pr-9 text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                @foreach($typesAllPet as $type)
+                                    <option>{{ $type->title }}</option>
+                                @endforeach
+                            </select>
                             <p class="text-red-500 text-xs italic">Please fill out this field.</p>
                         </div>
                     </div>
@@ -40,15 +42,16 @@
                                    for="breed">
                                 Breed
                             </label>
-                            <input
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                                id="breed" name="breed" type="text" placeholder="Doe">
+                            <select id="breed" name="breed" class="h-full rounded-md border-0 bg-transparent bg-none py-0 pl-4 pr-9 text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                @foreach($breedsAllData as $breed)
+                                    <option>{{ $breed->title }}</option>
+                                @endforeach
+                            </select>
                             <p class="text-red-500 text-xs italic">Please fill out this field.</p>
                         </div>
                     </div>
                 </form>
                 <div class="p-6" style="display: flex; justify-content: space-between;">
-
                     <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                        style="background-color: rgb(30 41 59);" href="">save</a>
                     <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
