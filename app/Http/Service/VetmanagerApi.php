@@ -5,7 +5,6 @@ namespace App\Http\Service;
 use App\Models\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Facades\DB;
 use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
 use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
 use Otis22\VetmanagerRestApi\Headers\WithAuth;
@@ -14,29 +13,14 @@ class VetmanagerApi
 {
     private Client $client;
     private string $apiKey;
-    private string $model;
 
-    public function __construct(User $user, string $model)
+    public function __construct(User $user)
     {
-        $this->apiKey = $user->userSettingApi()->key;
-        $this->client = new Client(['base_uri' => $user->userSettingApi()->url]);
-        $this->model = $model;
+        $this->apiKey = '58160e1141a1abcfb54ecc42266c7d84';//$user->apiSetting->key; $user->apiSetting->url
+        $this->client = new Client(['base_uri' => 'https://sashamel.vetmanager2.ru']);
     }
-//    private function getApiSettingUser()
-//    {
-//        $idUser = 1;
-//
-//        $settingApi = DB::table('users')->select('users.id', 'api_settings.id', 'api_settings.url', 'api_settings.key')
-//            ->join('api_settings', 'users.idApi', '=', 'api_settings.id')
-//            ->where('users.id', '=', $idUser)
-//            ->limit(1)
-//            ->get();
-//
-//        $this->apiKey = $settingApi->key;
-//        $this->apiDomen = $settingApi->url;
-//    }
 
-    private function authenticationUserHeaders()
+    private function authenticationUserHeaders(): WithAuth
     {
         return new WithAuth(new ByApiKey(new ApiKey($this->apiKey)));
     }
@@ -44,11 +28,37 @@ class VetmanagerApi
     /**
      * @throws GuzzleException
      */
-    public function add(array $validData): void
+    public function post(array $validData, string $model): void
     {
-        $this->client->request(
-            'POST',
-            $this->uri($this->model)->asString(),
+        $response = $this->client->post(
+            $this->uri($model),
+            [
+                'headers' => $this->authenticationUserHeaders()->asKeyValue(),
+                'json' => $validData
+            ]
+        );
+
+        $response->getBody();
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function delete(int $id, string $model): void
+    {
+        $this->client->delete(
+            $this->uri($model) . "/$id",
+            ['headers' => $this->authenticationUserHeaders()->asKeyValue()]
+        );
+    }
+
+    /**cr
+     * @throws GuzzleException
+     */
+    public function put(int $id, array $validData, string $model): void
+    {
+        $this->client->put(
+            $this->uri($model) . "/$id",
             [
                 'headers' => $this->authenticationUserHeaders()->asKeyValue(),
                 'json' => $validData
@@ -56,16 +66,8 @@ class VetmanagerApi
         );
     }
 
-    public function delete(int $id)
+    private function uri(string $model): string
     {
-        $this->client->delete(
-            uri($this->model)->asString() . "/$id",
-            ['headers' => $this->authenticationUserHeaders()->asKeyValue()]
-        );
-    }
-
-    public function update()
-    {
-
+        return '/rest/api/' . $model;
     }
 }

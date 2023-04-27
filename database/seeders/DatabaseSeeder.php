@@ -16,15 +16,15 @@ class DatabaseSeeder extends Seeder
     {
 
         DB::table('api_settings')->insert([
-            'url' => 'http://sashamel.vetmanager.ru',
+            'user_id' => '1',
+            'url' => 'https://sashamel.vetmanager2.ru',
             'key' => '58160e1141a1abcfb54ecc42266c7d84',
         ]);
 
         DB::table('users')->insert([
             'name' => 'admin',
             'email' => 'admin@admin.com',
-            'password' => Hash::make('secret'),
-            'idApi' => '1'
+            'password' => Hash::make('secret')
         ]);
     }
 }

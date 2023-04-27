@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
 
 class ApiSetting extends Model
 {
-    use HasFactory;
+    use HasApiTokens;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<string, string>
-     */
+    protected $table = 'api_settings';
     protected $fillable = [
         'url',
-        'key',
+        'key'
     ];
 
     public function user()

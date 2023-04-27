@@ -34,37 +34,72 @@ class ClientController extends Controller
     {
         $viewDataController = new ViewDataController();
 
-        $client = $viewDataController->getClientByIdAndSaveId($clientId);
+        $client = $viewDataController->getClientById($clientId);
         $pets = $viewDataController->getPetDataForClient($client);
 
         return view('client/profile-client', ['pets' => $pets, 'client' => $client, 'clientId' => $clientId]);
     }
+
+
 
     /**
      * @throws VetmanagerApiGatewayException
      */
     public function edit(int $clientId)
     {
-        $client = (new ViewDataController())->getClientByIdAndSaveId($clientId);
+        $client = (new ViewDataController())->getClientById($clientId);
         return view('client/add-client', ['client' => $client]);
     }
 
-    /**
-     * @throws GuzzleException
-     */
-    public function add(StorePostNewClientRequest $request)
+
+    public function viewAdd()
     {
-        $validate = $request->validated();
-        (new VetmanagerApi(Auth::user(), 'client'))->add($validate);
-        return redirect()->route('dashboard');
+        return view('client/add-client', ['client' => null]);
     }
 
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function deleteClient(int $clientId)
+    public function viewEdit(int $clientId) {
+        $viewDataController = new ViewDataController();
+        $client = $viewDataController->getClientById($clientId);
+
+        return view('client/add-client', ['client' => $client]);
+    }
+    /**
+     * @throws GuzzleException
+     */
+    public function store(StorePostNewClientRequest $request)
     {
-        (new VetmanagerApi(Auth::user(), 'client'))->delete($clientId);
+        $validate = $request->validated();
+        $validateForJsonApi = [
+            'last_name' => $validate['lastName'],
+            'first_name' => $validate['firstName'],
+            'middle_name' => $validate['middleName']
+        ];
+
+        (new VetmanagerApi(Auth::user()))->post($validateForJsonApi, 'client');
+
+         return redirect()->route('dashboard');
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function storeEdit(StorePostNewClientRequest $request)
+    {
+        $validate = $request->validated();
+        (new VetmanagerApi(Auth::user()))->put($validate, 'client');
+
+        return redirect()->route('dashboard');
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function delete(int $clientId)
+    {
+        (new VetmanagerApi(Auth::user()))->delete($clientId, 'client');
         return redirect()->route('dashboard');
     }
 

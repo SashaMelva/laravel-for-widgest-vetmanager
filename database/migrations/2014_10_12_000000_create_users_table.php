@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('url');
             $table->string('key');
+            $table->integer('user_id');
             $table->timestamps();
         });
 
@@ -23,8 +24,9 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->unsignedBigInteger('idApi')->unsigned();
-            $table->foreign('idApi')->references('id')->on('api_settings');
+ //           $table->integer('id_api');
+//            $table->unsignedBigInteger('idApi')->unsigned();
+//            $table->foreign('idApi')->references('id')->on('api_settings');
             $table->rememberToken();
             $table->timestamps();
         });

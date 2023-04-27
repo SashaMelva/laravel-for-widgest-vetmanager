@@ -9,12 +9,16 @@ use VetmanagerApiGateway\DO\DTO\DAO\Client;
 use VetmanagerApiGateway\DO\DTO\DAO\Pet;
 use VetmanagerApiGateway\DO\DTO\DAO\PetType;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
+use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 
 class ViewDataController extends Controller
 {
     private int $clientId;
     private ApiGateway $apiGateway;
 
+    /**
+     * @throws VetmanagerApiGatewayRequestException
+     */
     public function __construct(
         string $domainName = 'sashamel',
         string $apiKey = '58160e1141a1abcfb54ecc42266c7d84'
@@ -54,16 +58,10 @@ class ViewDataController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function getClientByIdAndSaveId(int $clientId): ?Client
+    public function getClientById(int $clientId): ?Client
     {
         $client = Client::getById($this->apiGateway, $clientId);
-
-        if ((bool)$client) {
-            $this->clientId = $clientId;
-            return $client;
-        }
-
-        return null;
+        return $client ?? null;
     }
 
     /**
