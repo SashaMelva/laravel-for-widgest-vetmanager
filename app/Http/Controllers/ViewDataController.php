@@ -15,7 +15,6 @@ use VetmanagerApiGateway\Exception\VetmanagerApiGatewayResponseException;
 
 class ViewDataController extends Controller
 {
-    private int $clientId;
     private ApiGateway $apiGateway;
 
     /**
@@ -31,16 +30,6 @@ class ViewDataController extends Controller
             $apiKey,
             true,
         );
-    }
-
-    public function getApiData()
-    {
-        $api = [
-            'domainName' => 'http://sashamel.vetmanager.ru',
-            'apiKey' => '58160e1141a1abcfb54ecc42266c7d84'
-        ];
-
-        return view('api-setting', ['apiSetting' => $api]);
     }
 
     /**
@@ -99,7 +88,7 @@ class ViewDataController extends Controller
     {
         $pet = Pet::getById($this->apiGateway, $petId);
 
-        return (bool)$pet ? $pet : null;
+        return $pet ?? null;
     }
 
     /**
@@ -150,42 +139,12 @@ class ViewDataController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function searchClientByMiddleName(string $middleName): array
+    public function searchClientByValue(string $property, string $value): array
     {
         $clients = Client::getByQueryBuilder($this->apiGateway,
             (new Builder())
                 ->where('status', 'ACTIVE')
-                ->where('middle_name', $middleName),
-            50
-        );
-
-        return (bool)$clients ? $clients : [];
-    }
-
-    /**
-     * @throws VetmanagerApiGatewayException
-     */
-    public function searchClientByLastName(string $lastName): array
-    {
-        $clients = Client::getByQueryBuilder($this->apiGateway,
-            (new Builder())
-                ->where('status', 'ACTIVE')
-                ->where('last_name', $lastName),
-            50
-        );
-
-        return (bool)$clients ? $clients : [];
-    }
-
-    /**
-     * @throws VetmanagerApiGatewayException
-     */
-    public function searchClientByFirstName(string $firstName): array
-    {
-        $clients = Client::getByQueryBuilder($this->apiGateway,
-            (new Builder())
-                ->where('status', 'ACTIVE')
-                ->where('first_name', $firstName),
+                ->where($property, $value),
             50
         );
 
@@ -208,8 +167,4 @@ class ViewDataController extends Controller
         return Breed::getAll($this->apiGateway);
     }
 
-    public function deleteClientById(int $clientId)
-    {
-
-    }
 }

@@ -114,18 +114,18 @@ class ClientController extends Controller
             return view('dashboard', ['clients' => $clients]);
         }
 
-        $clients = $apiController->getClientData();
+        $clients = [];
 
         if (!empty($lastName)) {
-            $clientsForApi = $apiController->searchClientByLastName($lastName);
+            $clientsForApi = $apiController->searchClientByValue('last_name', $lastName);
             $clients = $this->saveRepeatedArrayNameForClient($clients, $clientsForApi);
         }
         if (!empty($firstName)) {
-            $clientsForApi = $apiController->searchClientByFirstName($firstName);
+            $clientsForApi = $apiController->searchClientByValue('first_name', $firstName);
             $clients = $this->saveRepeatedArrayNameForClient($clients, $clientsForApi);
         }
         if (!empty($middleName)) {
-            $clientsForApi = $apiController->searchClientByMiddleName($middleName);
+            $clientsForApi = $apiController->searchClientByValue('middle_name', $middleName);
             $clients = $this->saveRepeatedArrayNameForClient($clients, $clientsForApi);
         }
 
@@ -140,6 +140,10 @@ class ClientController extends Controller
 
     private function saveRepeatedArrayNameForClient(array $firstArray, array $secondArray): array
     {
+        if (empty($firstArray)) {
+            return $secondArray;
+        }
+
         $resultArray = [];
 
         foreach ($firstArray as $firstValue) {
