@@ -27,11 +27,11 @@ Route::get('/api-setting', [ApiController::class, 'viewApiData'])->middleware(['
 
 Route::get('/add-client', [ClientController::class, 'viewAdd'])->middleware(['auth', 'verified'])->name('add-client');
 
-Route::post('/add-client/post', [ClientController::class, 'store'])->middleware(['auth', 'verified'])->name('add-client-post');
+Route::post('/add-client/post', [ClientController::class, 'add'])->middleware(['auth', 'verified'])->name('add-client-post');
 
 Route::get('/edit-client/{id}', [ClientController::class, 'viewEdit'])->middleware(['auth', 'verified'])->name('edit-client');
 
-Route::post('/edit-client/post', [ClientController::class, 'storeEdit'])->middleware(['auth', 'verified'])->name('edit-client-post');
+Route::post('/edit-client/post/{id}', [ClientController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit-client-post');
 
 Route::get('/delete-client/{id}', [ClientController::class, 'delete'])->middleware(['auth', 'verified'])->name('delete-client');
 
@@ -41,11 +41,11 @@ Route::get('/profile-client/{id}', [ClientController::class, 'profile'])->middle
 Route::get('/search-client', [ClientController::class, 'search'])->middleware(['auth', 'verified'])->name('search-client');
 
 
-Route::get('/profile-client/add-pet/{id}', [PetController::class, 'viewAddPet'])->middleware(['auth', 'verified'])->name('add-pet');
+Route::get('/profile-client/add-pet/{id}', [PetController::class, 'viewAdd'])->middleware(['auth', 'verified'])->name('add-pet');
 
-Route::get('/profile-client/add-pet/post', [PetController::class, 'add'])->middleware(['auth', 'verified'])->name('add-pet-post');
+Route::get('/profile-client/add-pet/post/{id}', [PetController::class, 'add'])->middleware(['auth', 'verified'])->name('add-pet-post');
 
-Route::get('/profile-client/edit-pet/{id}', [PetController::class, 'viewEditPet'])->middleware(['auth', 'verified'])->name('edit-pet');
+Route::get('/profile-client/edit-pet/{id}', [PetController::class, 'viewEdit'])->middleware(['auth', 'verified'])->name('edit-pet');
 
 Route::get('/profile-client/edit-pet/post/{id}', [PetController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit-pet-post');
 

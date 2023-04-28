@@ -10,6 +10,8 @@ use VetmanagerApiGateway\DO\DTO\DAO\Pet;
 use VetmanagerApiGateway\DO\DTO\DAO\PetType;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
+use VetmanagerApiGateway\Exception\VetmanagerApiGatewayResponseEmptyException;
+use VetmanagerApiGateway\Exception\VetmanagerApiGatewayResponseException;
 
 class ViewDataController extends Controller
 {
@@ -44,6 +46,32 @@ class ViewDataController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
+    public function getTypeIdForTitle(string $title): int
+    {
+        $breeds = PetType::getByQueryBuilder($this->apiGateway,
+            (new Builder())
+                ->where('title', $title),
+            1
+        );
+        return (int)$breeds[0]->id;
+    }
+
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
+    public function getBreedIdForTitle(string $title): int
+    {
+        $breeds = Breed::getByQueryBuilder($this->apiGateway,
+            (new Builder())
+                ->where('title', $title),
+            1
+        );
+        return (int)$breeds[0]->id;
+    }
+
+    /**
+     * @throws VetmanagerApiGatewayException
+     */
     public function getClientData(): array
     {
         $clients = Client::getByQueryBuilder($this->apiGateway,
@@ -67,17 +95,13 @@ class ViewDataController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function getPetByIdAndSaveId(int $petId): ?Pet
+    public function getPetById(int $petId): ?Pet
     {
         $pet = Pet::getById($this->apiGateway, $petId);
 
-        if ((bool)$pet) {
-            //$this->clientId = $petId;
-            return $pet;
-        }
-
-        return null;
+        return (bool)$pet ? $pet : null;
     }
+
     /**
      * @throws VetmanagerApiGatewayException
      */

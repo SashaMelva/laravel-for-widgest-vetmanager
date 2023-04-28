@@ -14,24 +14,24 @@ class PetController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function viewAddPet()
+    public function viewAdd(int $clientId)
     {
         $viewDataController = new ViewDataController();
 
         $breedsAllData = $viewDataController->getAllBreedsPet();
         $typesAllPet = $viewDataController->getAllTypesPet();
 
-        return view('pet/add-pet', ['breedsAllData' => $breedsAllData, 'typesAllPet' => $typesAllPet]);
+        return view('pet/add-pet', ['breedsAllData' => $breedsAllData, 'typesAllPet' => $typesAllPet, 'clientId' => $clientId]);
     }
 
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function viewEditPet(int $petId)
+    public function viewEdit(int $petId)
     {
         $viewDataController = new ViewDataController();
 
-        $pet = $viewDataController->getPetByIdAndSaveId($petId);
+        $pet = $viewDataController->getPetById($petId);
         $breedsAllData = $viewDataController->getAllBreedsPet();
         $typesAllPet = $viewDataController->getAllTypesPet();
 
@@ -40,22 +40,51 @@ class PetController extends Controller
 
     /**
      * @throws GuzzleException
+     * @throws VetmanagerApiGatewayException
      */
-    public function edit(StorePostNewPetRequest $request, $petId)
+    public function add(StorePostNewPetRequest $request, int $clientId)
     {
         $validate = $request->validated();
-        (new VetmanagerApi(Auth::user()))->put($petId ,$validate, 'pet');
+
+        $viewDataController = new ViewDataController;
+        $typeId = $viewDataController->getTypeIdForTitle($validate['type-pet']);
+        $breedId = $viewDataController->getBreedIdForTitle($validate['breed']);
+
+        $validateForJsonApi = [
+            'alias' => $validate['alias'],
+            'type_id' => $typeId,
+            'breed_id' => $breedId,
+            'owner_id' => $clientId
+        ];
+
+        (new VetmanagerApi(Auth::user()))->post($validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
     }
 
     /**
      * @throws GuzzleException
+     * @throws VetmanagerApiGatewayException
      */
-    public function add(StorePostNewPetRequest $request)
+    public function edit(StorePostNewPetRequest $request, $petId)
     {
         $validate = $request->validated();
-        (new VetmanagerApi(Auth::user()))->post($validate, 'pet');
+        $viewDataController = new ViewDataController;
+
+        $pet = $viewDataController->getPetById($petId);
+
+        $typeId = $viewDataController->getTypeIdForTitle($validate['type-pet']);
+        $breedId = $viewDataController->getBreedIdForTitle($validate['breed']);
+
+        $validateForJsonApi = [
+            'alias' => $validate['alias'],
+            'type_id' => $typeId,
+            'breed_id' => $breedId,
+            'owner_id' => $pet->client->id
+        ];
+
+
+        (new VetmanagerApi(Auth::user()))->put($petId, $validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
     }

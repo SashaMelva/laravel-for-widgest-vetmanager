@@ -30,27 +30,15 @@ class ClientController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function profile(int $clientId)
+    public function profile(string $clientId)
     {
         $viewDataController = new ViewDataController();
 
-        $client = $viewDataController->getClientById($clientId);
+        $client = $viewDataController->getClientById((int)$clientId);
         $pets = $viewDataController->getPetDataForClient($client);
 
         return view('client/profile-client', ['pets' => $pets, 'client' => $client, 'clientId' => $clientId]);
     }
-
-
-
-    /**
-     * @throws VetmanagerApiGatewayException
-     */
-    public function edit(int $clientId)
-    {
-        $client = (new ViewDataController())->getClientById($clientId);
-        return view('client/add-client', ['client' => $client]);
-    }
-
 
     public function viewAdd()
     {
@@ -64,12 +52,12 @@ class ClientController extends Controller
         $viewDataController = new ViewDataController();
         $client = $viewDataController->getClientById($clientId);
 
-        return view('client/add-client', ['client' => $client]);
+        return view('client/edit-client', ['client' => $client]);
     }
     /**
      * @throws GuzzleException
      */
-    public function store(StorePostNewClientRequest $request)
+    public function add(StorePostNewClientRequest $request)
     {
         $validate = $request->validated();
         $validateForJsonApi = [
@@ -86,10 +74,17 @@ class ClientController extends Controller
     /**
      * @throws GuzzleException
      */
-    public function storeEdit(StorePostNewClientRequest $request)
+    public function edit(StorePostNewClientRequest $request, int $clientId)
     {
         $validate = $request->validated();
-        (new VetmanagerApi(Auth::user()))->put($validate, 'client');
+
+        $validateForJsonApi = [
+            'last_name' => $validate['lastName'],
+            'first_name' => $validate['firstName'],
+            'middle_name' => $validate['middleName']
+        ];
+
+        (new VetmanagerApi(Auth::user()))->put($clientId, $validateForJsonApi, 'client');
 
         return redirect()->route('dashboard');
     }
