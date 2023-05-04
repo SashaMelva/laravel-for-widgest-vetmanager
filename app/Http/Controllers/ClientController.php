@@ -4,19 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostNewClientRequest;
 use App\Http\Service\VetmanagerApi;
+use App\Models\User;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
+use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 
 class ClientController extends Controller
 {
 
+    /**
+     * @throws VetmanagerApiGatewayRequestException
+     * @throws VetmanagerApiGatewayException
+     */
     public function allDataClient()
     {
-        $clients = (new ViewDataController())->getClientData();
+        $user = Auth::user();
+
+        if (!$user instanceof User) {
+            throw new Exception('Не получили пользователя');
+        }
+
+        $setting = $user->apiSetting;
+        $domainName = $setting->url;
+        $apiKey = $setting->key;
+
+        $clients = (new ViewDataController($domainName, $apiKey))->getClientData();
         return view('dashboard', [
             'clients' => $clients,
             'searchData' => [
@@ -29,10 +44,20 @@ class ClientController extends Controller
 
     /**
      * @throws VetmanagerApiGatewayException
+     * @throws Exception
      */
     public function profile(string $clientId)
     {
-        $viewDataController = new ViewDataController();
+        $user = Auth::user();
+
+        if (!$user instanceof User) {
+            throw new Exception('Не получили пользователя');
+        }
+
+        $setting = $user->getApiSetting();
+        $domainName = $setting->url;
+        $apiKey = $setting->key;
+        $viewDataController = new ViewDataController($domainName, $apiKey);
 
         $client = $viewDataController->getClientById((int)$clientId);
         $pets = $viewDataController->getPetDataForClient($client);
@@ -48,8 +73,12 @@ class ClientController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function viewEdit(int $clientId) {
-        $viewDataController = new ViewDataController();
+    public function viewEdit(int $clientId)
+    {
+        $setting = Auth::user()->getApiSetting();
+        $domainName = $setting->domainName;
+        $apiKey = $setting->key;
+        $viewDataController = new ViewDataController($domainName, $apiKey);
         $client = $viewDataController->getClientById($clientId);
 
         return view('client/edit-client', ['client' => $client]);
@@ -103,7 +132,10 @@ class ClientController extends Controller
      */
     public function search(Request $request)
     {
-        $apiController = new ViewDataController();
+        $setting = (Auth::user())->getApiSetting();
+        $domainName = $setting->domainName;
+        $apiKey = $setting->key;
+        $apiController = new ViewDataController($domainName, $apiKey);
 
         $lastName = trim($request->lastName);
         $firstName = trim($request->firstName);

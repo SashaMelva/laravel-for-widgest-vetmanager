@@ -10,8 +10,6 @@ use VetmanagerApiGateway\DO\DTO\DAO\Pet;
 use VetmanagerApiGateway\DO\DTO\DAO\PetType;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
-use VetmanagerApiGateway\Exception\VetmanagerApiGatewayResponseEmptyException;
-use VetmanagerApiGateway\Exception\VetmanagerApiGatewayResponseException;
 
 class ViewDataController extends Controller
 {
@@ -21,8 +19,8 @@ class ViewDataController extends Controller
      * @throws VetmanagerApiGatewayRequestException
      */
     public function __construct(
-        string $domainName = 'sashamel',
-        string $apiKey = '58160e1141a1abcfb54ecc42266c7d84'
+        string $domainName,
+        string $apiKey
     )
     {
         $this->apiGateway = ApiGateway::fromDomainAndApiKey(

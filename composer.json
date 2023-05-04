@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "barryvdh/laravel-ide-helper": "^2.13",
         "guzzlehttp/guzzle": "^7.5",
         "ioncurly/vetmanager-api-gateway": "^1.0",
         "laravel/framework": "^10.8",

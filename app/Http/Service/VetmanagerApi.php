@@ -8,10 +8,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
 use Otis22\VetmanagerRestApi\Headers\Auth\ByApiKey;
 use Otis22\VetmanagerRestApi\Headers\WithAuth;
-use Otis22\VetmanagerRestApi\Query\Filter\EqualTo;
-use Otis22\VetmanagerRestApi\Query\Filter\Value\StringValue;
-use Otis22\VetmanagerRestApi\Query\Filters;
-use Otis22\VetmanagerRestApi\Model\Property;
 
 class VetmanagerApi
 {
@@ -69,27 +65,6 @@ class VetmanagerApi
             ]
         );
     }
-
-    /**
-     * @throws GuzzleException
-     */
-//    public function search(string $model, ,)
-//    {
-//        $filters = new Filters(
-//            new EqualTo(
-//                new Property('propertyName'),
-//                new StringValue('propertyValue')
-//            )
-//        );
-//
-//        $this->client->get(
-//            $this->uri($model),
-//            [
-//                'headers' => $this->authenticationUserHeaders()->asKeyValue(),
-//                'query' => $filters->asKeyValue()
-//            ]
-//        );
-//    }
 
     private function uri(string $model): string
     {

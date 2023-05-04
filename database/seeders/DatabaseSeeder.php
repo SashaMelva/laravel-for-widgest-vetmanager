@@ -17,11 +17,12 @@ class DatabaseSeeder extends Seeder
 
         DB::table('api_settings')->insert([
             'user_id' => '1',
-            'url' => 'https://sashamel.vetmanager2.ru',
+            'url' => 'sashamel',
             'key' => '58160e1141a1abcfb54ecc42266c7d84',
         ]);
 
         DB::table('users')->insert([
+
             'name' => 'admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('secret')
