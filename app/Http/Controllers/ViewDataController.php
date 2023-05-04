@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Otis22\VetmanagerRestApi\Query\Builder;
 use VetmanagerApiGateway\ApiGateway;
 use VetmanagerApiGateway\DO\DTO\DAO\Breed;
@@ -18,14 +19,11 @@ class ViewDataController extends Controller
     /**
      * @throws VetmanagerApiGatewayRequestException
      */
-    public function __construct(
-        string $domainName,
-        string $apiKey
-    )
+    public function __construct(User $user)
     {
         $this->apiGateway = ApiGateway::fromDomainAndApiKey(
-            $domainName,
-            $apiKey,
+            $domainName = $user->apiSetting->url,
+            $apiKey = $user->apiSetting->key,
             true,
         );
     }

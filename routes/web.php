@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ApiController;
+use App\Http\Controllers\ApiSettingController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\ProfileController;
@@ -19,11 +19,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->middleware(['auth', 'verified']);
 
-Route::get('/dashboard', [ClientController::class, 'allDataClient'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [ClientController::class, 'allDataClient'])->middleware(['auth', 'verified', 'api.setting'])->name('dashboard');
 
-Route::get('/api-setting', [ApiController::class, 'viewApiData'])->middleware(['auth', 'verified'])->name('api-setting');
+Route::get('/api-setting', [ApiSettingController::class, 'viewApiData'])->middleware(['auth', 'verified'])->name('api-setting');
 
 Route::get('/add-client', [ClientController::class, 'viewAdd'])->middleware(['auth', 'verified'])->name('add-client');
 
@@ -51,6 +51,12 @@ Route::get('/profile-client/edit-pet/post/{id}', [PetController::class, 'edit'])
 
 Route::get('/profile-client/delete-pet/{id}', [PetController::class, 'delete'])->middleware(['auth', 'verified'])->name('delete-pet');
 
+
+Route::get('/api-setting/add', [ApiSettingController::class, 'viewRegisterSettingApi'])->middleware(['auth', 'verified'])->name('add-api-setting');
+
+Route::post('/api-setting/add/post', [ApiSettingController::class, 'store'])->middleware(['auth', 'verified'])->name('add-api-setting-post');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -58,4 +64,4 @@ Route::middleware('auth')->group(function () {
 });
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

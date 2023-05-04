@@ -16,8 +16,8 @@ class VetmanagerApi
 
     public function __construct(User $user)
     {
-        $this->apiKey = '58160e1141a1abcfb54ecc42266c7d84';//$user->apiSetting->key; $user->apiSetting->url
-        $this->client = new Client(['base_uri' => 'https://sashamel.vetmanager2.ru']);
+        $this->apiKey = $user->apiSetting->key;
+        $this->client = new Client(['base_uri' => 'https://' . $user->apiSetting->url . '.vetmanager2.ru']);
     }
 
     private function authenticationUserHeaders(): WithAuth

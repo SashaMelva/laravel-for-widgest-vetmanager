@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostNewPetRequest;
 use App\Http\Service\VetmanagerApi;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 
@@ -16,7 +15,7 @@ class PetController extends Controller
      */
     public function viewAdd(int $clientId)
     {
-        $viewDataController = new ViewDataController();
+        $viewDataController = new ViewDataController(Auth::user());
 
         $breedsAllData = $viewDataController->getAllBreedsPet();
         $typesAllPet = $viewDataController->getAllTypesPet();
@@ -29,7 +28,7 @@ class PetController extends Controller
      */
     public function viewEdit(int $petId)
     {
-        $viewDataController = new ViewDataController();
+        $viewDataController = new ViewDataController(Auth::user());
 
         $pet = $viewDataController->getPetById($petId);
         $breedsAllData = $viewDataController->getAllBreedsPet();
@@ -46,7 +45,7 @@ class PetController extends Controller
     {
         $validate = $request->validated();
 
-        $viewDataController = new ViewDataController;
+        $viewDataController = new ViewDataController(Auth::user());
         $typeId = $viewDataController->getTypeIdForTitle($validate['type-pet']);
         $breedId = $viewDataController->getBreedIdForTitle($validate['breed']);
 
@@ -69,7 +68,7 @@ class PetController extends Controller
     public function edit(StorePostNewPetRequest $request, $petId)
     {
         $validate = $request->validated();
-        $viewDataController = new ViewDataController;
+        $viewDataController = new ViewDataController(Auth::user());
 
         $pet = $viewDataController->getPetById($petId);
 

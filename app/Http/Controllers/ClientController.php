@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostNewClientRequest;
 use App\Http\Service\VetmanagerApi;
-use App\Models\User;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
@@ -14,24 +13,13 @@ use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 
 class ClientController extends Controller
 {
-
     /**
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
      */
     public function allDataClient()
     {
-        $user = Auth::user();
-
-        if (!$user instanceof User) {
-            throw new Exception('Не получили пользователя');
-        }
-
-        $setting = $user->apiSetting;
-        $domainName = $setting->url;
-        $apiKey = $setting->key;
-
-        $clients = (new ViewDataController($domainName, $apiKey))->getClientData();
+        $clients = (new ViewDataController(Auth::user()))->getClientData();
         return view('dashboard', [
             'clients' => $clients,
             'searchData' => [
@@ -48,16 +36,7 @@ class ClientController extends Controller
      */
     public function profile(string $clientId)
     {
-        $user = Auth::user();
-
-        if (!$user instanceof User) {
-            throw new Exception('Не получили пользователя');
-        }
-
-        $setting = $user->getApiSetting();
-        $domainName = $setting->url;
-        $apiKey = $setting->key;
-        $viewDataController = new ViewDataController($domainName, $apiKey);
+        $viewDataController = new ViewDataController(Auth::user());
 
         $client = $viewDataController->getClientById((int)$clientId);
         $pets = $viewDataController->getPetDataForClient($client);
@@ -75,14 +54,12 @@ class ClientController extends Controller
      */
     public function viewEdit(int $clientId)
     {
-        $setting = Auth::user()->getApiSetting();
-        $domainName = $setting->domainName;
-        $apiKey = $setting->key;
-        $viewDataController = new ViewDataController($domainName, $apiKey);
+        $viewDataController = new ViewDataController(Auth::user());
         $client = $viewDataController->getClientById($clientId);
 
         return view('client/edit-client', ['client' => $client]);
     }
+
     /**
      * @throws GuzzleException
      */
@@ -97,7 +74,7 @@ class ClientController extends Controller
 
         (new VetmanagerApi(Auth::user()))->post($validateForJsonApi, 'client');
 
-         return redirect()->route('dashboard');
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -132,10 +109,7 @@ class ClientController extends Controller
      */
     public function search(Request $request)
     {
-        $setting = (Auth::user())->getApiSetting();
-        $domainName = $setting->domainName;
-        $apiKey = $setting->key;
-        $apiController = new ViewDataController($domainName, $apiKey);
+        $apiController = new ViewDataController(Auth::user());
 
         $lastName = trim($request->lastName);
         $firstName = trim($request->firstName);
