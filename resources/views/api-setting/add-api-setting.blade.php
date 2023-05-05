@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('add-api-setting-post') }}">
+    <form method="POST" action="{{ route('api-settings.create') }}">
         @csrf
 
         <div>

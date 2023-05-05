@@ -39,11 +39,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-//        Auth::user()->apiSetting;
-//        if (isset(Auth::user()->apiSetting->key)) {
-//            return redirect(RouteServiceProvider::HOME);
-//        }
-
         return redirect()->route('add-api-setting');
     }
 }

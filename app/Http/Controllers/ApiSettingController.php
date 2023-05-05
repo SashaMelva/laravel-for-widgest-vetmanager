@@ -5,20 +5,28 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostNewApiSetting;
 use App\Models\ApiSetting;
 use App\Providers\RouteServiceProvider;
-use Auth;
 
 class ApiSettingController extends Controller
 {
-    public function viewApiData()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
         return view('api-setting', ['apiSetting' => ApiSetting::all()->where('user_id', Auth::user()->id)]);
     }
 
-    public function viewRegisterSettingApi()
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
         return view('add-api-setting');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(StorePostNewApiSetting $request)
     {
         $valid = $request->validated();

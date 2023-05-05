@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostNewClientRequest;
+use App\Http\Service\DataMapper;
 use App\Http\Service\DataVetmanagerApi;
 use App\Http\Service\VetmanagerApi;
 use App\Models\ApiSetting;
@@ -67,12 +68,7 @@ class ClientController extends Controller
     public function store(StorePostNewClientRequest $request)
     {
         $validate = $request->validated();
-
-        $validateForJsonApi = [
-            'last_name' => $validate['lastName'],
-            'first_name' => $validate['firstName'],
-            'middle_name' => $validate['middleName']
-        ];
+        $validateForJsonApi = (new DataMapper())->rename($validate);
 
         $apiSetting = $this->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->post($validateForJsonApi, 'client');
@@ -117,12 +113,7 @@ class ClientController extends Controller
     public function update(StorePostNewClientRequest $request, string $clientId)
     {
         $validate = $request->validated();
-
-        $validateForJsonApi = [
-            'last_name' => $validate['lastName'],
-            'first_name' => $validate['firstName'],
-            'middle_name' => $validate['middleName']
-        ];
+        $validateForJsonApi = (new DataMapper())->rename($validate);
 
         $apiSetting = $this->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($clientId, $validateForJsonApi, 'client');

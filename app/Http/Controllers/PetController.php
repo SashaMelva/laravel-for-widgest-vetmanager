@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostNewPetRequest;
 use App\Http\Service\DataVetmanagerApi;
 use App\Http\Service\VetmanagerApi;
+use App\Models\ApiSetting;
 use App\Models\User;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -18,7 +19,7 @@ class PetController extends Controller
      * @throws VetmanagerApiGatewayRequestException
      * @throws Exception
      */
-    private function getApiSetting()
+    private function getApiSetting(): ApiSetting
     {
         $user = Auth::user();
 
@@ -56,19 +57,10 @@ class PetController extends Controller
     {
         $validate = $request->validated();
 
+        $validateForJsonApi = $this->refactorDataForJson($validate);
+        $validateForJsonApi[] = ['owner_id' => $clientId];
+
         $apiSetting = $this->getApiSetting();
-        $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
-
-        $typeId = $vetmanagerApi->getTypeIdForTitle($validate['type-pet']);
-        $breedId = $vetmanagerApi->getBreedIdForTitle($validate['breed']);
-
-        $validateForJsonApi = [
-            'alias' => $validate['alias'],
-            'type_id' => $typeId,
-            'breed_id' => $breedId,
-            'owner_id' => $clientId
-        ];
-
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->post($validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
@@ -99,23 +91,16 @@ class PetController extends Controller
      */
     public function update(StorePostNewPetRequest $request, string $petId)
     {
-        $validate = $request->validated();
-
         $apiSetting = $this->getApiSetting();
         $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
+        $validate = $request->validated();
+
+        $validateForJsonApi = $this->refactorDataForJson($validate);
         $pet = $vetmanagerApi->getPetById($petId);
+        $validateForJsonApi[] = ['owner_id' => $pet->client->id];
 
-        $typeId = $vetmanagerApi->getTypeIdForTitle($validate['type-pet']);
-        $breedId = $vetmanagerApi->getBreedIdForTitle($validate['breed']);
-
-        $validateForJsonApi = [
-            'alias' => $validate['alias'],
-            'type_id' => $typeId,
-            'breed_id' => $breedId,
-            'owner_id' => $pet->client->id
-        ];
-
+        $apiSetting = $this->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($petId, $validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
@@ -132,5 +117,24 @@ class PetController extends Controller
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->delete($petId, 'pet');
 
         return redirect()->route('dashboard');
+    }
+
+    /**
+     * @throws VetmanagerApiGatewayException
+     * @throws VetmanagerApiGatewayRequestException
+     */
+    private function refactorDataForJson($validate)
+    {
+        $apiSetting = $this->getApiSetting();
+        $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
+
+        $typeId = $vetmanagerApi->getTypeIdForTitle($validate['type-pet']);
+        $breedId = $vetmanagerApi->getBreedIdForTitle($validate['breed']);
+
+        return [
+            'alias' => $validate['alias'],
+            'type_id' => $typeId,
+            'breed_id' => $breedId
+        ];
     }
 }
