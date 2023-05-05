@@ -37,11 +37,4 @@ class StorePostNewPetRequest extends FormRequest
             'breed' => 'A breed pet is not valid',
         ];
     }
-
-//    protected function prepareForValidation(): void #TODO Del
-//    {
-//        $this->merge([
-//            'breed_MIME' => $this->breed,
-//        ]);
-//    }
 }

@@ -34,6 +34,7 @@ class DataVetmanagerApi extends Controller
                 ->where('title', $title),
             1
         );
+
         return (int)$breeds[0]->id;
     }
 
@@ -47,6 +48,7 @@ class DataVetmanagerApi extends Controller
                 ->where('title', $title),
             1
         );
+
         return (int)$breeds[0]->id;
     }
 
@@ -60,6 +62,7 @@ class DataVetmanagerApi extends Controller
                 ->where('status', 'ACTIVE'),
             50
         );
+
         return !empty($clients) ? $clients : [];
     }
 
@@ -69,7 +72,7 @@ class DataVetmanagerApi extends Controller
     public function getClientById(int $clientId): ?Client
     {
         $client = Client::getById($this->apiGateway, $clientId);
-        return $client;
+        return $client ?? null;
     }
 
     /**
@@ -78,7 +81,7 @@ class DataVetmanagerApi extends Controller
     public function getPetById(int $petId): ?Pet
     {
         $pet = Pet::getById($this->apiGateway, $petId);
-        return $pet;
+        return $pet ?? null;
     }
 
     /**
@@ -122,6 +125,7 @@ class DataVetmanagerApi extends Controller
                 ->where('middle_name', $middleName),
             50
         );
+
         return $clients;
     }
 
@@ -136,6 +140,7 @@ class DataVetmanagerApi extends Controller
                 ->where($property, $value),
             50
         );
+
         return $clients;
     }
 
