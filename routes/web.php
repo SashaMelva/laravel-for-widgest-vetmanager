@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified', 'api.setting'])->group(function () {
         ->name('api-setting');
 
     Route::resource('pets', PetController::class);
+    Route::resource('pets', PetController::class);
 //    Route::get('/add-client', [ClientController::class, 'viewAdd'])
 //        ->name('add-client');
 //
@@ -45,20 +46,20 @@ Route::middleware(['auth', 'verified', 'api.setting'])->group(function () {
 //
 
 
-    Route::get('/profile-client/add-pet/{id}', [PetController::class, 'viewAdd'])
-        ->name('add-pet');
-
-    Route::get('/profile-client/add-pet/post/{id}', [PetController::class, 'add'])
-        ->name('add-pet-post');
-
-    Route::get('/profile-client/edit-pet/{id}', [PetController::class, 'viewEdit'])
-        ->name('edit-pet');
-
-    Route::get('/profile-client/edit-pet/post/{id}', [PetController::class, 'edit'])
-        ->name('edit-pet-post');
-
-    Route::get('/profile-client/delete-pet/{id}', [PetController::class, 'delete'])
-        ->name('delete-pet');
+//    Route::get('/profile-client/add-pet/{id}', [PetController::class, 'viewAdd'])
+//        ->name('add-pet');
+//
+//    Route::get('/profile-client/add-pet/post/{id}', [PetController::class, 'add'])
+//        ->name('add-pet-post');
+//
+//    Route::get('/profile-client/edit-pet/{id}', [PetController::class, 'viewEdit'])
+//        ->name('edit-pet');
+//
+//    Route::get('/profile-client/edit-pet/post/{id}', [PetController::class, 'edit'])
+//        ->name('edit-pet-post');
+//
+//    Route::get('/profile-client/delete-pet/{id}', [PetController::class, 'delete'])
+//        ->name('delete-pet');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

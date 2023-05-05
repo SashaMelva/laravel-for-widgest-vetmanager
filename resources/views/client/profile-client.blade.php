@@ -26,7 +26,7 @@
                     <div class="mt-1 mb-4">
                         <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                            style="background-color: rgb(30 41 59);"
-                           href="{{route('pets.create', $client->id)}}" hidden="hidden">{{ __('Add Pet') }}</a>
+                           href="{{route('pets.view.create', $client->id)}}" hidden="hidden">{{ __('Add Pet') }}</a>
                     </div>
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -54,9 +54,15 @@
                                         <a href="{{ route('pets.edit', $pet->id) }}">Edit</a>
                                     </td>
                                     <td class="px-6 py-5">
-                                        <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                                           style="background-color: rgb(220 38 38);"
-                                           href="{{ route('pets.destroy', $pet->id) }}">Delete</a>
+                                        <form method="POST" action="{{ route('pets.destroy', $pet->id)}}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                                    style="background-color: rgb(220 38 38)">
+                                                Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach

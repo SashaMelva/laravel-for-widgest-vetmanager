@@ -21,7 +21,7 @@
                     {{ __("Добавление клиента") }}
                 </div>
 
-                <form action="{{ route('clients.create') }}" class="w-full max-w-lg">
+                <form method="POST" action="{{ route('clients.store') }}" class="w-full max-w-lg">
                     @csrf
                     <div class="flex flex-wrap -mx-3 mb-6">
                         <div class="w-full md:w-1/2 px-3">

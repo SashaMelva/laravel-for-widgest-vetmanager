@@ -116,7 +116,6 @@ class PetController extends Controller
             'owner_id' => $pet->client->id
         ];
 
-
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($petId, $validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
@@ -131,6 +130,7 @@ class PetController extends Controller
     {
         $apiSetting = $this->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->delete($petId, 'pet');
+
         return redirect()->route('dashboard');
     }
 }
