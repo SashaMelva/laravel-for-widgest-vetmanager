@@ -2,7 +2,6 @@
 
 namespace App\Http\Service;
 
-use App\Models\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Otis22\VetmanagerRestApi\Headers\Auth\ApiKey;
@@ -14,10 +13,10 @@ class VetmanagerApi
     private Client $client;
     private string $apiKey;
 
-    public function __construct(User $user)
+    public function __construct(string $domainName, string $apiKey)
     {
-        $this->apiKey = $user->apiSetting->key;
-        $this->client = new Client(['base_uri' => 'https://' . $user->apiSetting->url . '.vetmanager2.ru']);
+        $this->apiKey = $apiKey;
+        $this->client = new Client(['base_uri' => 'https://' . $domainName . '.vetmanager2.ru']);
     }
 
     private function authenticationUserHeaders(): WithAuth

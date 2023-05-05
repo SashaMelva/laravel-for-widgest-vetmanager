@@ -7,19 +7,18 @@ use App\Http\Service\DataVetmanagerApi;
 use App\Http\Service\VetmanagerApi;
 use App\Models\User;
 use Exception;
-use Illuminate\Http\Request;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Auth;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 
 class PetController extends Controller
 {
-
     /**
      * @throws VetmanagerApiGatewayRequestException
      * @throws Exception
      */
-    private function getVetmanagerApi(): DataVetmanagerApi
+    private function getApiSetting()
     {
         $user = Auth::user();
 
@@ -27,7 +26,7 @@ class PetController extends Controller
             throw new Exception('Model getting error Users');
         }
 
-        return new DataVetmanagerApi($user->apiSetting->url, $user->apiSetting->key);
+        return $user->apiSetting;
     }
 
 
@@ -38,7 +37,8 @@ class PetController extends Controller
      */
     public function create(int $clientId)
     {
-        $vetmanagerApi = $this->getVetmanagerApi();
+        $apiSetting = $this->getApiSetting();
+        $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $breedsAllData = $vetmanagerApi->getAllBreedsPet();
         $typesAllPet = $vetmanagerApi->getAllTypesPet();
@@ -50,12 +50,15 @@ class PetController extends Controller
      * Store a newly created resource in storage.
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
+     * @throws GuzzleException
      */
     public function store(StorePostNewPetRequest $request, int $clientId)
     {
         $validate = $request->validated();
 
-        $vetmanagerApi = $this->getVetmanagerApi();
+        $apiSetting = $this->getApiSetting();
+        $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
+
         $typeId = $vetmanagerApi->getTypeIdForTitle($validate['type-pet']);
         $breedId = $vetmanagerApi->getBreedIdForTitle($validate['breed']);
 
@@ -66,7 +69,7 @@ class PetController extends Controller
             'owner_id' => $clientId
         ];
 
-        (new VetmanagerApi(Auth::user()))->post($validateForJsonApi, 'pet');
+        (new VetmanagerApi($apiSetting->url, $apiSetting->key))->post($validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
     }
@@ -78,7 +81,8 @@ class PetController extends Controller
      */
     public function edit(string $petId)
     {
-        $vetmanagerApi = $this->getVetmanagerApi();
+        $apiSetting = $this->getApiSetting();
+        $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $pet = $vetmanagerApi->getPetById($petId);
         $breedsAllData = $vetmanagerApi->getAllBreedsPet();
@@ -91,12 +95,14 @@ class PetController extends Controller
      * Update the specified resource in storage.
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
+     * @throws GuzzleException
      */
-    public function update(Request $request, string $petId)
+    public function update(StorePostNewPetRequest $request, string $petId)
     {
         $validate = $request->validated();
 
-        $vetmanagerApi = $this->getVetmanagerApi();
+        $apiSetting = $this->getApiSetting();
+        $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $pet = $vetmanagerApi->getPetById($petId);
 
@@ -111,17 +117,20 @@ class PetController extends Controller
         ];
 
 
-        (new VetmanagerApi(Auth::user()))->put($petId, $validateForJsonApi, 'pet');
+        (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($petId, $validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
     }
 
     /**
      * Remove the specified resource from storage.
+     * @throws VetmanagerApiGatewayRequestException
+     * @throws GuzzleException
      */
     public function destroy(string $petId)
     {
-        (new VetmanagerApi(Auth::user()))->delete($petId, 'pet');
+        $apiSetting = $this->getApiSetting();
+        (new VetmanagerApi($apiSetting->url, $apiSetting->key))->delete($petId, 'pet');
         return redirect()->route('dashboard');
     }
 }

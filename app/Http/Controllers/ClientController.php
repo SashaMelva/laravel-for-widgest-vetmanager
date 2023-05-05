@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostNewClientRequest;
 use App\Http\Service\DataVetmanagerApi;
 use App\Http\Service\VetmanagerApi;
+use App\Models\ApiSetting;
+use App\Models\User;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
@@ -14,12 +18,29 @@ use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 class ClientController extends Controller
 {
     /**
+     * @throws VetmanagerApiGatewayRequestException
+     * @throws Exception
+     */
+    private function getApiSetting(): ApiSetting
+    {
+        $user = Auth::user();
+
+        if (!$user instanceof User) {
+            throw new Exception('Model getting error Users');
+        }
+
+        return $user->apiSetting;
+    }
+
+    /**
      * Display a listing of the resource.
      * @throws VetmanagerApiGatewayException
      */
     public function index()
     {
-        $clients = (new DataVetmanagerApi(Auth::user()))->getClientData();
+        $apiSetting = $this->getApiSetting();
+        $clients = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key))->getClientData();
+
         return view('dashboard', [
             'clients' => $clients,
             'searchData' => [
@@ -41,17 +62,20 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      * @throws GuzzleException
+     * @throws VetmanagerApiGatewayRequestException
      */
     public function store(StorePostNewClientRequest $request)
     {
         $validate = $request->validated();
+
         $validateForJsonApi = [
             'last_name' => $validate['lastName'],
             'first_name' => $validate['firstName'],
             'middle_name' => $validate['middleName']
         ];
 
-        (new VetmanagerApi(Auth::user()))->post($validateForJsonApi, 'client');
+        $apiSetting = $this->getApiSetting();
+        (new VetmanagerApi($apiSetting->url, $apiSetting->key))->post($validateForJsonApi, 'client');
 
         return redirect()->route('dashboard');
     }
@@ -63,7 +87,8 @@ class ClientController extends Controller
      */
     public function show(string $id)
     {
-        $viewDataController = new DataVetmanagerApi(Auth::user());
+        $apiSetting = $this->getApiSetting();
+        $viewDataController = new DataVetmanagerApi($apiSetting->url, $apiSetting->key);
 
         $client = $viewDataController->getClientById((int)$id);
         $pets = $viewDataController->getPetDataForClient($client);
@@ -78,8 +103,8 @@ class ClientController extends Controller
      */
     public function edit(string $clientId)
     {
-        $viewDataController = new DataVetmanagerApi(Auth::user());
-        $client = $viewDataController->getClientById($clientId);
+        $apiSetting = $this->getApiSetting();
+        $client = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key))->getClientById($clientId);
 
         return view('client/edit-client', ['client' => $client]);
     }
@@ -87,6 +112,7 @@ class ClientController extends Controller
     /**
      * Update the specified resource in storage.
      * @throws GuzzleException
+     * @throws VetmanagerApiGatewayRequestException
      */
     public function update(StorePostNewClientRequest $request, string $clientId)
     {
@@ -98,7 +124,8 @@ class ClientController extends Controller
             'middle_name' => $validate['middleName']
         ];
 
-        (new VetmanagerApi(Auth::user()))->put($clientId, $validateForJsonApi, 'client');
+        $apiSetting = $this->getApiSetting();
+        (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($clientId, $validateForJsonApi, 'client');
 
         return redirect()->route('dashboard');
     }
@@ -106,10 +133,13 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      * @throws GuzzleException
+     * @throws VetmanagerApiGatewayRequestException
      */
-    public function destroy(string $clientId)
+    public function destroy(string $clientId): RedirectResponse
     {
-        (new VetmanagerApi(Auth::user()))->delete($clientId, 'client');
+        $apiSetting = $this->getApiSetting();
+        (new VetmanagerApi($apiSetting->url, $apiSetting->key))->delete($clientId, 'client');
+
         return redirect()->route('dashboard');
     }
 
@@ -119,29 +149,30 @@ class ClientController extends Controller
      */
     public function search(Request $request)
     {
-        $apiController = new DataVetmanagerApi(Auth::user());
+        $apiSetting = $this->getApiSetting();
+        $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $lastName = trim($request->lastName);
         $firstName = trim($request->firstName);
         $middleName = trim($request->middleName);
 
         if (!empty($lastName) && !empty($firstName) && !empty($middleName)) {
-            $clients = $apiController->searchClientByAllParam($lastName, $firstName, $middleName);
+            $clients = $vetmanagerApi->searchClientByAllParam($lastName, $firstName, $middleName);
             return view('dashboard', ['clients' => $clients]);
         }
 
         $clients = [];
 
         if (!empty($lastName)) {
-            $clientsForApi = $apiController->searchClientByValue('last_name', $lastName);
+            $clientsForApi = $vetmanagerApi->searchClientByValue('last_name', $lastName);
             $clients = $this->saveRepeatedArrayNameForClient($clients, $clientsForApi);
         }
         if (!empty($firstName)) {
-            $clientsForApi = $apiController->searchClientByValue('first_name', $firstName);
+            $clientsForApi = $vetmanagerApi->searchClientByValue('first_name', $firstName);
             $clients = $this->saveRepeatedArrayNameForClient($clients, $clientsForApi);
         }
         if (!empty($middleName)) {
-            $clientsForApi = $apiController->searchClientByValue('middle_name', $middleName);
+            $clientsForApi = $vetmanagerApi->searchClientByValue('middle_name', $middleName);
             $clients = $this->saveRepeatedArrayNameForClient($clients, $clientsForApi);
         }
 
