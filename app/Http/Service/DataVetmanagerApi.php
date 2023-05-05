@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Service;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use Otis22\VetmanagerRestApi\Query\Builder;
 use VetmanagerApiGateway\ApiGateway;
 use VetmanagerApiGateway\DO\DTO\DAO\Breed;
@@ -12,20 +12,16 @@ use VetmanagerApiGateway\DO\DTO\DAO\PetType;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 
-class ViewDataController extends Controller
+class DataVetmanagerApi extends Controller
 {
     private ApiGateway $apiGateway;
 
     /**
      * @throws VetmanagerApiGatewayRequestException
      */
-    public function __construct(User $user)
+    public function __construct(string $domainName, string $apiKey)
     {
-        $this->apiGateway = ApiGateway::fromDomainAndApiKey(
-            $domainName = $user->apiSetting->url,
-            $apiKey = $user->apiSetting->key,
-            true,
-        );
+        $this->apiGateway = ApiGateway::fromDomainAndApiKey($domainName, $apiKey, true);
     }
 
     /**
@@ -64,7 +60,6 @@ class ViewDataController extends Controller
                 ->where('status', 'ACTIVE'),
             50
         );
-
         return !empty($clients) ? $clients : [];
     }
 
@@ -74,7 +69,7 @@ class ViewDataController extends Controller
     public function getClientById(int $clientId): ?Client
     {
         $client = Client::getById($this->apiGateway, $clientId);
-        return $client ?? null;
+        return $client;
     }
 
     /**
@@ -83,8 +78,7 @@ class ViewDataController extends Controller
     public function getPetById(int $petId): ?Pet
     {
         $pet = Pet::getById($this->apiGateway, $petId);
-
-        return $pet ?? null;
+        return $pet;
     }
 
     /**
@@ -128,8 +122,7 @@ class ViewDataController extends Controller
                 ->where('middle_name', $middleName),
             50
         );
-
-        return (bool)$clients ? $clients : [];
+        return $clients;
     }
 
     /**
@@ -143,8 +136,7 @@ class ViewDataController extends Controller
                 ->where($property, $value),
             50
         );
-
-        return (bool)$clients ? $clients : [];
+        return $clients;
     }
 
     /**
@@ -162,5 +154,4 @@ class ViewDataController extends Controller
     {
         return Breed::getAll($this->apiGateway);
     }
-
 }

@@ -35,4 +35,5 @@ class StorePostNewApiSetting extends FormRequest
             'apiKey' => 'A api key is not valid',
         ];
     }
+
 }

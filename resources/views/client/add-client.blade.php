@@ -11,7 +11,7 @@
             <div class="alert alert-danger">
                 <ul>
                     @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                        <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
@@ -21,7 +21,7 @@
                     {{ __("Добавление клиента") }}
                 </div>
 
-                <form method="POST" action="{{ route('add-client-post') }}" class="w-full max-w-lg">
+                <form action="{{ route('clients.create') }}" class="w-full max-w-lg">
                     @csrf
                     <div class="flex flex-wrap -mx-3 mb-6">
                         <div class="w-full md:w-1/2 px-3">
@@ -31,8 +31,7 @@
                             </label>
                             <input
                                 class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                                id="lastName" name="lastName" type="text" placeholder="last name"
-                                @if(!is_null($client)) value="{{ $client->lastName }}"@endif>
+                                id="lastName" name="lastName" type="text" placeholder="last name">
                             <p class="text-red-500 text-xs italic">Please fill out this field.</p>
                         </div>
                         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -42,8 +41,7 @@
                             </label>
                             <input
                                 class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                                id="firstName" name="firstName" type="text" placeholder="first name"
-                                @if(!is_null($client)) value="{{ $client->firstName }}"@endif>
+                                id="firstName" name="firstName" type="text" placeholder="first name">
                             <p class="text-red-500 text-xs italic">Please fill out this field.</p>
                         </div>
                         <div class="w-full md:w-1/2 px-3">
@@ -53,8 +51,7 @@
                             </label>
                             <input
                                 class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                id="middleName" name="middleName" type="text" placeholder="middle name"
-                                @if(!is_null($client)) value="{{ $client->middleName }}"@endif>
+                                id="middleName" name="middleName" type="text" placeholder="middle name">
                         </div>
                     </div>
                     <div class="p-6" style="display: flex; justify-content: space-between;">
@@ -64,7 +61,7 @@
                         </button>
                         <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                            style="background-color: rgb(30 41 59);"
-                           href="{{route('dashboard')}}">back</a>
+                           href="{{route('clients.index')}}">back</a>
                     </div>
                     <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
                 </form>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostNewPetRequest extends FormRequest
@@ -17,7 +18,7 @@ class StorePostNewPetRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -36,4 +37,11 @@ class StorePostNewPetRequest extends FormRequest
             'breed' => 'A breed pet is not valid',
         ];
     }
+
+//    protected function prepareForValidation(): void #TODO Del
+//    {
+//        $this->merge([
+//            'breed_MIME' => $this->breed,
+//        ]);
+//    }
 }

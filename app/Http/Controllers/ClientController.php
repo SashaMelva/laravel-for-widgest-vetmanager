@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostNewClientRequest;
+use App\Http\Service\DataVetmanagerApi;
 use App\Http\Service\VetmanagerApi;
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +14,12 @@ use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 class ClientController extends Controller
 {
     /**
-     * @throws VetmanagerApiGatewayRequestException
+     * Display a listing of the resource.
      * @throws VetmanagerApiGatewayException
      */
-    public function allDataClient()
+    public function index()
     {
-        $clients = (new ViewDataController(Auth::user()))->getClientData();
+        $clients = (new DataVetmanagerApi(Auth::user()))->getClientData();
         return view('dashboard', [
             'clients' => $clients,
             'searchData' => [
@@ -31,39 +31,18 @@ class ClientController extends Controller
     }
 
     /**
-     * @throws VetmanagerApiGatewayException
-     * @throws Exception
+     * Show the form for creating a new resource.
      */
-    public function profile(string $clientId)
-    {
-        $viewDataController = new ViewDataController(Auth::user());
-
-        $client = $viewDataController->getClientById((int)$clientId);
-        $pets = $viewDataController->getPetDataForClient($client);
-
-        return view('client/profile-client', ['pets' => $pets, 'client' => $client, 'clientId' => $clientId]);
-    }
-
-    public function viewAdd()
+    public function create()
     {
         return view('client/add-client', ['client' => null]);
     }
 
     /**
-     * @throws VetmanagerApiGatewayException
-     */
-    public function viewEdit(int $clientId)
-    {
-        $viewDataController = new ViewDataController(Auth::user());
-        $client = $viewDataController->getClientById($clientId);
-
-        return view('client/edit-client', ['client' => $client]);
-    }
-
-    /**
+     * Store a newly created resource in storage.
      * @throws GuzzleException
      */
-    public function add(StorePostNewClientRequest $request)
+    public function store(StorePostNewClientRequest $request)
     {
         $validate = $request->validated();
         $validateForJsonApi = [
@@ -78,9 +57,38 @@ class ClientController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     * @throws VetmanagerApiGatewayRequestException
+     * @throws VetmanagerApiGatewayException
+     */
+    public function show(string $id)
+    {
+        $viewDataController = new DataVetmanagerApi(Auth::user());
+
+        $client = $viewDataController->getClientById((int)$id);
+        $pets = $viewDataController->getPetDataForClient($client);
+
+        return view('client/profile-client', ['pets' => $pets, 'client' => $client, 'clientId' => $id]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * @throws VetmanagerApiGatewayRequestException
+     * @throws VetmanagerApiGatewayException
+     */
+    public function edit(string $clientId)
+    {
+        $viewDataController = new DataVetmanagerApi(Auth::user());
+        $client = $viewDataController->getClientById($clientId);
+
+        return view('client/edit-client', ['client' => $client]);
+    }
+
+    /**
+     * Update the specified resource in storage.
      * @throws GuzzleException
      */
-    public function edit(StorePostNewClientRequest $request, int $clientId)
+    public function update(StorePostNewClientRequest $request, string $clientId)
     {
         $validate = $request->validated();
 
@@ -96,9 +104,10 @@ class ClientController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
      * @throws GuzzleException
      */
-    public function delete(int $clientId)
+    public function destroy(string $clientId)
     {
         (new VetmanagerApi(Auth::user()))->delete($clientId, 'client');
         return redirect()->route('dashboard');
@@ -106,10 +115,11 @@ class ClientController extends Controller
 
     /**
      * @throws VetmanagerApiGatewayException
+     * @throws VetmanagerApiGatewayRequestException
      */
     public function search(Request $request)
     {
-        $apiController = new ViewDataController(Auth::user());
+        $apiController = new DataVetmanagerApi(Auth::user());
 
         $lastName = trim($request->lastName);
         $firstName = trim($request->firstName);

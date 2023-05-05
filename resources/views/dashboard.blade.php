@@ -12,9 +12,9 @@
                     {{ __("Фильтр поиска пользователей") }}
                     <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                        style="background-color: rgb(220 38 38);"
-                       href="{{ route('dashboard') }}">{{ __('reset') }}</a>
+                       href="{{ route('clients.index') }}">{{ __('reset') }}</a>
                 </div>
-                <form method="GET" action="{{ route('search-client') }}">
+                <form method="GET" action="{{ route('clients.search') }}">
                     <div style="display: flex; justify-content: space-between; padding: 0 1.5rem 1.5rem 1.5rem;">
                         <div class="w-full md:w-1/2 px-3">
                             <label for="lastName"
@@ -60,7 +60,7 @@
                     <div class="mt-1 mb-4">
                         <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                            style="background-color: rgb(30 41 59);"
-                           href="{{route('add-client')}}">{{ __('Add User') }}</a>
+                           href="{{route('clients.create')}}">{{ __('Add User') }}</a>
                     </div>
                     @if(!empty($clients))
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -83,17 +83,17 @@
                                         </th>
                                         <td class="px-6 py-5">{{ $client->lastName }} {{ $client->firstName }} {{ $client->middleName }}</td>
                                         <td class="px-6 py-5">
-                                            <a href="{{route('edit-client', $client->id)}}">Edit</a>
+                                            <a href="{{route('clients.edit', $client->id)}}">Edit</a>
                                         </td>
                                         <td class="px-6 py-5">
                                             <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                                                style="background-color: rgb(220 38 38);"
-                                               href="{{ route('delete-client', $client->id) }}">Delete</a>
+                                               href="{{ route('clients.destroy', $client->id) }}">Delete</a>
                                         </td>
                                         <td class="px-6 py-5">
                                             <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                                                style="background-color: rgb(22 163 74);"
-                                               href="{{ route('profile-client', $client->id) }}">watch</a>
+                                               href="{{ route('clients.show', $client->id) }}">watch</a>
                                         </td>
                                     </tr>
                                 @endforeach
