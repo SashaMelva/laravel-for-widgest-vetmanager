@@ -1,7 +1,6 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('api-settings.create') }}">
+    <form method="POST" action="{{ route('api-settings.store') }}">
         @csrf
-
         <div>
             <x-input-label for="domainName" :value="__('Domain Name')"/>
             <x-text-input id="domainName" class="block mt-1 w-full" type="text" name="domainName" :value="old('name')"

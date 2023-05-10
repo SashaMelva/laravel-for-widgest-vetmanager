@@ -8,7 +8,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Homepage') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('api-setting')" :active="request()->routeIs('api-setting')">
+                    <x-nav-link :href="route('api-settings.index')" :active="request()->routeIs('api-setting')">
                         {{ __('ApiData') }}
                     </x-nav-link>
                 </div>

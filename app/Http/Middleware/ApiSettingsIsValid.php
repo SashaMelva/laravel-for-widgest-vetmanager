@@ -17,7 +17,7 @@ class ApiSettingsIsValid
     public function handle(Request $request, Closure $next): Response
     {
         if (!isset(Auth::user()->apiSetting->id)) {
-            return redirect()->route('add-api-setting');
+            return redirect()->route('api-settings.create');
         }
 
         return $next($request);

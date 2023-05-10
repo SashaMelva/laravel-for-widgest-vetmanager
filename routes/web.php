@@ -17,23 +17,24 @@ Route::middleware(['auth', 'verified', 'api.setting'])->group(function () {
 
     Route::resource('clients', ClientController::class);
 
-    Route::get('/clients/search', [ClientController::class, 'search'])
+    Route::post('/clients/search', [ClientController::class, 'search'])
         ->name('clients.search');
-
-    Route::get('/api-setting', [ApiSettingController::class, 'viewApiData'])
-        ->name('api-setting');
 
     Route::resource('pets', PetController::class);
 
+    Route::get('pets/create/{id}', [PetController::class, 'createAdd'])
+        ->name('pets.view.create');
 
+    Route::post('pets/store/{id}', [PetController::class, 'store'])
+        ->name('pets.store.data');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/api-setting/add', [ApiSettingController::class, 'viewRegisterSettingApi'])
-        ->name('add-api-setting');
-
-    Route::post('/api-setting/add/post', [ApiSettingController::class, 'store'])
-        ->name('add-api-setting-post');
+//    Route::get('/api-setting/add', [ApiSettingController::class, 'viewRegisterSettingApi'])
+//        ->name('add-api-setting');
+//
+//    Route::post('/api-setting/add/post', [ApiSettingController::class, 'store'])
+//        ->name('add-api-setting-post');
 
     Route::resource('api-settings', ApiSettingController::class);
 });

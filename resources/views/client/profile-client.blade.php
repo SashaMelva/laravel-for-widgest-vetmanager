@@ -12,9 +12,11 @@
                 <div class="text-gray-900">
                     <p class="p-6">{{ __("Профиль клиента") }}</p>
                     <div class="p-6">
-                        <p>{{ $client->lastName }}</p>
-                        <p>{{ $client->firstName }}</p>
-                        <p>{{ $client->middleName }}</p>
+                        @if(!is_null($client))
+                            <p>{{ $client->lastName }}</p>
+                            <p>{{ $client->firstName }}</p>
+                            <p>{{ $client->middleName }}</p>
+                        @endif
                     </div>
                     <div class="p-6" style="display: flex; justify-content: space-between;">
                         <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
@@ -24,9 +26,12 @@
                 </div>
                 <div class="p-6">
                     <div class="mt-1 mb-4">
-                        <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                           style="background-color: rgb(30 41 59);"
-                           href="{{route('pets.view.create', $client->id)}}" hidden="hidden">{{ __('Add Pet') }}</a>
+                        @if(!is_null($client))
+                            <a class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                               style="background-color: rgb(30 41 59);"
+                               href="{{route('pets.view.create',  $client->id)}}"
+                               hidden="hidden">{{ __('Add Pet') }}</a>
+                        @endif
                     </div>
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -41,31 +46,33 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($pets as $pet)
-                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                    <th scope="row"
-                                        class="px-6 py-5 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                        {{ $pet->id }}
-                                    </th>
-                                    <td class="px-6 py-5">{{ $pet->alias }}</td>
-                                    <td class="px-6 py-5">{{ $pet->type->title }}</td>
-                                    <td class="px-6 py-5">{{ $pet->breed->title }}</td>
-                                    <td class="px-6 py-5">
-                                        <a href="{{ route('pets.edit', $pet->id) }}">Edit</a>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <form method="POST" action="{{ route('pets.destroy', $pet->id)}}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                                                    style="background-color: rgb(220 38 38)">
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
+                            @if(!is_null($pets))
+                                @foreach($pets as $pet)
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                        <th scope="row"
+                                            class="px-6 py-5 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                            {{ $pet->id }}
+                                        </th>
+                                        <td class="px-6 py-5">{{ $pet->alias }}</td>
+                                        <td class="px-6 py-5">{{ $pet->type->title }}</td>
+                                        <td class="px-6 py-5">{{ $pet->breed->title }}</td>
+                                        <td class="px-6 py-5">
+                                            <a href="{{ route('pets.edit', $pet->id) }}">Edit</a>
+                                        </td>
+                                        <td class="px-6 py-5">
+                                            <form method="POST" action="{{ route('pets.destroy', $pet->id)}}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                                        style="background-color: rgb(220 38 38)">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
                             </tbody>
                         </table>
                     </div>

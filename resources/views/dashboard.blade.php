@@ -14,7 +14,8 @@
                        style="background-color: rgb(220 38 38);"
                        href="{{ route('clients.index') }}">{{ __('reset') }}</a>
                 </div>
-                <form method="GET" action="{{ route('clients.search') }}">
+                <form method="POST" action="{{ route('clients.search') }}">
+                    @csrf
                     <div style="display: flex; justify-content: space-between; padding: 0 1.5rem 1.5rem 1.5rem;">
                         <div class="w-full md:w-1/2 px-3">
                             <label for="lastName"

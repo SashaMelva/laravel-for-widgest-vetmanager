@@ -3,6 +3,8 @@
 namespace App\Http\Service;
 
 use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Http\RedirectResponse;
 use Otis22\VetmanagerRestApi\Query\Builder;
 use VetmanagerApiGateway\ApiGateway;
 use VetmanagerApiGateway\DO\DTO\DAO\Breed;
@@ -55,15 +57,19 @@ class DataVetmanagerApi extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      */
-    public function getClientData(): array
+    public function getClientData(): RedirectResponse|array
     {
-        $clients = Client::getByQueryBuilder($this->apiGateway,
-            (new Builder())
-                ->where('status', 'ACTIVE'),
-            50
-        );
+        try {
+            $clients = Client::getByQueryBuilder($this->apiGateway,
+                (new Builder())
+                    ->where('status', 'ACTIVE'),
+                50
+            );
 
-        return !empty($clients) ? $clients : [];
+            return $clients;
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -71,8 +77,11 @@ class DataVetmanagerApi extends Controller
      */
     public function getClientById(int $clientId): ?Client
     {
-        $client = Client::getById($this->apiGateway, $clientId);
-        return $client ?? null;
+        try {
+            return Client::getById($this->apiGateway, $clientId);
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -80,8 +89,12 @@ class DataVetmanagerApi extends Controller
      */
     public function getPetById(int $petId): ?Pet
     {
-        $pet = Pet::getById($this->apiGateway, $petId);
-        return $pet ?? null;
+        try {
+            $pet = Pet::getById($this->apiGateway, $petId);
+            return $pet;
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -89,27 +102,31 @@ class DataVetmanagerApi extends Controller
      */
     public function getPetDataForClient(?Client $client): array
     {
-        if (is_null($client)) {
-            return [];
-        }
-
-        $pets = Pet::getAll($this->apiGateway);
-
-        if (empty($pets)) {
-            return [];
-        }
-
-        $clientPets = [];
-
-        foreach ($pets as $pet) {
-            if ($pet->client->firstName == $client->firstName &&
-                $pet->client->middleName == $client->middleName &&
-                $pet->client->lastName == $client->lastName) {
-                $clientPets[] = $pet;
+        try {
+            if (is_null($client)) {
+                return [];
             }
-        }
 
-        return !empty($clientPets) ? $clientPets : [];
+            $pets = Pet::getAll($this->apiGateway);
+
+            if (empty($pets)) {
+                return [];
+            }
+
+            $clientPets = [];
+
+            foreach ($pets as $pet) {
+                if ($pet->client->firstName == $client->firstName &&
+                    $pet->client->middleName == $client->middleName &&
+                    $pet->client->lastName == $client->lastName) {
+                    $clientPets[] = $pet;
+                }
+            }
+
+            return $clientPets;
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -117,7 +134,7 @@ class DataVetmanagerApi extends Controller
      */
     public function searchClientByAllParam(string $firstName, string $middleName, string $lastName): array
     {
-        $clients = Client::getByQueryBuilder($this->apiGateway,
+        return Client::getByQueryBuilder($this->apiGateway,
             (new Builder())
                 ->where('status', 'ACTIVE')
                 ->where('last_name', $lastName)
@@ -125,8 +142,6 @@ class DataVetmanagerApi extends Controller
                 ->where('middle_name', $middleName),
             50
         );
-
-        return $clients;
     }
 
     /**
@@ -134,14 +149,12 @@ class DataVetmanagerApi extends Controller
      */
     public function searchClientByValue(string $property, string $value): array
     {
-        $clients = Client::getByQueryBuilder($this->apiGateway,
+        return Client::getByQueryBuilder($this->apiGateway,
             (new Builder())
                 ->where('status', 'ACTIVE')
                 ->where($property, $value),
             50
         );
-
-        return $clients;
     }
 
     /**

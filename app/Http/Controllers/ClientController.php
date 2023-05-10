@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostNewClientRequest;
-use App\Http\Service\DataMapper;
+use App\Http\Service\DataMapperClient;
 use App\Http\Service\DataVetmanagerApi;
 use App\Http\Service\VetmanagerApi;
 use App\Models\ApiSetting;
@@ -39,17 +39,21 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $apiSetting = $this->getApiSetting();
-        $clients = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key))->getClientData();
+        try {
+            $apiSetting = $this->getApiSetting();
+            $clients = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key))->getClientData();
 
-        return view('dashboard', [
-            'clients' => $clients,
-            'searchData' => [
-                'lastName' => "",
-                'firstName' => "",
-                'middleName' => ""
-            ]
-        ]);
+            return view('dashboard', [
+                'clients' => $clients,
+                'searchData' => [
+                    'lastName' => "",
+                    'firstName' => "",
+                    'middleName' => ""
+                ]
+            ]);
+        } catch (Exception $e) {
+            return redirect()->route('api-settings.create');
+        }
     }
 
     /**
@@ -68,7 +72,7 @@ class ClientController extends Controller
     public function store(StorePostNewClientRequest $request)
     {
         $validate = $request->validated();
-        $validateForJsonApi = (new DataMapper())->rename($validate);
+        $validateForJsonApi = (new DataMapperClient($validate))->asArray();
 
         $apiSetting = $this->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->post($validateForJsonApi, 'client');
@@ -89,7 +93,7 @@ class ClientController extends Controller
         $client = $viewDataController->getClientById((int)$id);
         $pets = $viewDataController->getPetDataForClient($client);
 
-        return view('client/profile-client', ['pets' => $pets, 'client' => $client, 'clientId' => $id]);
+        return view('client/profile-client', ['pets' => $pets, 'client' => $client]);
     }
 
     /**
@@ -113,7 +117,7 @@ class ClientController extends Controller
     public function update(StorePostNewClientRequest $request, string $clientId)
     {
         $validate = $request->validated();
-        $validateForJsonApi = (new DataMapper())->rename($validate);
+        $validateForJsonApi = (new DataMapperClient($validate))->asArray();
 
         $apiSetting = $this->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($clientId, $validateForJsonApi, 'client');

@@ -36,7 +36,7 @@ class PetController extends Controller
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
      */
-    public function create(int $clientId)
+    public function createAdd(int $clientId)
     {
         $apiSetting = $this->getApiSetting();
         $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
@@ -58,7 +58,7 @@ class PetController extends Controller
         $validate = $request->validated();
 
         $validateForJsonApi = $this->refactorDataForJson($validate);
-        $validateForJsonApi[] = ['owner_id' => $clientId];
+        $validateForJsonApi['owner_id'] = $clientId;
 
         $apiSetting = $this->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->post($validateForJsonApi, 'pet');
@@ -98,7 +98,7 @@ class PetController extends Controller
 
         $validateForJsonApi = $this->refactorDataForJson($validate);
         $pet = $vetmanagerApi->getPetById($petId);
-        $validateForJsonApi[] = ['owner_id' => $pet->client->id];
+        $validateForJsonApi['owner_id'] = $pet->client->id;
 
         $apiSetting = $this->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($petId, $validateForJsonApi, 'pet');

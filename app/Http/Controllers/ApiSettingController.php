@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostNewApiSetting;
 use App\Models\ApiSetting;
 use App\Providers\RouteServiceProvider;
+use Auth;
 
 class ApiSettingController extends Controller
 {
@@ -13,7 +14,12 @@ class ApiSettingController extends Controller
      */
     public function index()
     {
-        return view('api-setting', ['apiSetting' => ApiSetting::all()->where('user_id', Auth::user()->id)]);
+        return view(
+            'api-setting/api-setting',
+            [
+                'apiSetting' => ApiSetting::all()->where('user_id', Auth::user()->id)
+            ]
+        );
     }
 
     /**
@@ -21,7 +27,7 @@ class ApiSettingController extends Controller
      */
     public function create()
     {
-        return view('add-api-setting');
+        return view('api-setting/add-api-setting');
     }
 
     /**

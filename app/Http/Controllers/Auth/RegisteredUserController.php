@@ -39,6 +39,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('add-api-setting');
+        return redirect()->route('api-setting.create');
     }
 }
