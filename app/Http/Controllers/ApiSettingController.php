@@ -14,11 +14,10 @@ class ApiSettingController extends Controller
      */
     public function index()
     {
-        //dd(auth()->user()->apiSetting->id);
         return view(
             'api-setting/api-setting',
             [
-                'apiSetting' => auth()->user()->apiSetting
+                'apiSetting' => ApiSetting::all()->where('user_id', Auth::user()->id)
             ]
         );
     }
