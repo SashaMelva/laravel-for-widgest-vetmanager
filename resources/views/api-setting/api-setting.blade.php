@@ -20,16 +20,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($apiSetting as $setting)
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row"
-                                class="px-6 py-5 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                {{ $setting->id }}
-                            </th>
-                            <td class="px-6 py-5">{{ $setting->url }}</td>
-                            <td class="px-6 py-5">{{ $setting->key }}</td>
-                        </tr>
-                    @endforeach
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <th scope="row"
+                            class="px-6 py-5 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                            {{ $apiSetting->id }}
+                        </th>
+                        <td class="px-6 py-5">{{ $apiSetting->url }}</td>
+                        <td class="px-6 py-5">{{ $apiSetting->key }}</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
