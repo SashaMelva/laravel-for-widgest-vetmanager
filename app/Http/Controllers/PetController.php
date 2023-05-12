@@ -4,41 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostNewPetRequest;
 use App\Http\Service\DataVetmanagerApi;
+use App\Http\Service\UserApiSettings;
 use App\Http\Service\VetmanagerApi;
-use App\Models\ApiSetting;
-use App\Models\User;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Facades\Auth;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 
 class PetController extends Controller
 {
     /**
-     * @throws VetmanagerApiGatewayRequestException
-     * @throws Exception
-     */
-    private function getApiSetting(): ApiSetting
-    {
-        $user = Auth::user();
-
-        if (!$user instanceof User) {
-            throw new Exception('Model getting error Users');
-        }
-
-        return $user->apiSetting;
-    }
-
-
-    /**
      * Show the form for creating a new resource.
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
+     * @throws Exception
      */
     public function createAdd(int $clientId)
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $breedsAllData = $vetmanagerApi->getAllBreedsPet();
@@ -52,6 +35,7 @@ class PetController extends Controller
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
      * @throws GuzzleException
+     * @throws Exception
      */
     public function store(StorePostNewPetRequest $request, int $clientId)
     {
@@ -60,7 +44,7 @@ class PetController extends Controller
         $validateForJsonApi = $this->refactorDataForJson($validate);
         $validateForJsonApi['owner_id'] = $clientId;
 
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->post($validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
@@ -73,7 +57,7 @@ class PetController extends Controller
      */
     public function edit(string $petId)
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $pet = $vetmanagerApi->getPetById($petId);
@@ -88,10 +72,11 @@ class PetController extends Controller
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
      * @throws GuzzleException
+     * @throws Exception
      */
     public function update(StorePostNewPetRequest $request, string $petId)
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $validate = $request->validated();
@@ -100,7 +85,7 @@ class PetController extends Controller
         $pet = $vetmanagerApi->getPetById($petId);
         $validateForJsonApi['owner_id'] = $pet->client->id;
 
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($petId, $validateForJsonApi, 'pet');
 
         return redirect()->route('dashboard');
@@ -110,10 +95,11 @@ class PetController extends Controller
      * Remove the specified resource from storage.
      * @throws VetmanagerApiGatewayRequestException
      * @throws GuzzleException
+     * @throws Exception
      */
     public function destroy(string $petId)
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->delete($petId, 'pet');
 
         return redirect()->route('dashboard');
@@ -122,10 +108,11 @@ class PetController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      * @throws VetmanagerApiGatewayRequestException
+     * @throws Exception
      */
     private function refactorDataForJson($validate)
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $typeId = $vetmanagerApi->getTypeIdForTitle($validate['type-pet']);

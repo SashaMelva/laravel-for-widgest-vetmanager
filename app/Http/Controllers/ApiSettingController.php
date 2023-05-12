@@ -3,21 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostNewApiSetting;
+use App\Http\Service\UserApiSettings;
 use App\Models\ApiSetting;
 use App\Providers\RouteServiceProvider;
 use Auth;
+use Exception;
 
 class ApiSettingController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * @throws Exception
      */
     public function index()
     {
+        $apiSetting = (new UserApiSettings())->getApiSetting();
+
         return view(
             'api-setting/api-setting',
             [
-                'apiSetting' => ApiSetting::all()->where('user_id', Auth::user()->id)
+                'apiSetting' => [$apiSetting->key, $apiSetting->url]
             ]
         );
     }

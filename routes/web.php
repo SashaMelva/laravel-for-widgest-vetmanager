@@ -30,12 +30,6 @@ Route::middleware(['auth', 'verified', 'api.setting'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-//    Route::get('/api-setting/add', [ApiSettingController::class, 'viewRegisterSettingApi'])
-//        ->name('add-api-setting');
-//
-//    Route::post('/api-setting/add/post', [ApiSettingController::class, 'store'])
-//        ->name('add-api-setting-post');
-
     Route::resource('api-settings', ApiSettingController::class);
 });
 

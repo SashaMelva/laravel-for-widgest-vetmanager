@@ -5,34 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostNewClientRequest;
 use App\Http\Service\DataMapperClient;
 use App\Http\Service\DataVetmanagerApi;
+use App\Http\Service\UserApiSettings;
 use App\Http\Service\VetmanagerApi;
-use App\Models\ApiSetting;
-use App\Models\User;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayException;
 use VetmanagerApiGateway\Exception\VetmanagerApiGatewayRequestException;
 
 class ClientController extends Controller
 {
-    /**
-     * @throws VetmanagerApiGatewayRequestException
-     * @throws Exception
-     */
-    private function getApiSetting(): ApiSetting
-    {
-        $user = Auth::user();
-
-        if (!$user instanceof User) {
-            throw new Exception('Model getting error Users');
-        }
-
-        return $user->apiSetting;
-    }
-
     /**
      * Display a listing of the resource.
      * @throws VetmanagerApiGatewayException
@@ -40,7 +23,7 @@ class ClientController extends Controller
     public function index()
     {
         try {
-            $apiSetting = $this->getApiSetting();
+            $apiSetting = (new UserApiSettings())->getApiSetting();
             $clients = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key))->getClientData();
 
             return view('dashboard', [
@@ -67,14 +50,14 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      * @throws GuzzleException
-     * @throws VetmanagerApiGatewayRequestException
+     * @throws Exception
      */
     public function store(StorePostNewClientRequest $request)
     {
         $validate = $request->validated();
         $validateForJsonApi = (new DataMapperClient($validate))->asArray();
 
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->post($validateForJsonApi, 'client');
 
         return redirect()->route('dashboard');
@@ -84,10 +67,11 @@ class ClientController extends Controller
      * Display the specified resource.
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
+     * @throws Exception
      */
     public function show(string $id)
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         $viewDataController = new DataVetmanagerApi($apiSetting->url, $apiSetting->key);
 
         $client = $viewDataController->getClientById((int)$id);
@@ -100,10 +84,11 @@ class ClientController extends Controller
      * Show the form for editing the specified resource.
      * @throws VetmanagerApiGatewayRequestException
      * @throws VetmanagerApiGatewayException
+     * @throws Exception
      */
     public function edit(string $clientId)
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         $client = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key))->getClientById($clientId);
 
         return view('client/edit-client', ['client' => $client]);
@@ -113,13 +98,14 @@ class ClientController extends Controller
      * Update the specified resource in storage.
      * @throws GuzzleException
      * @throws VetmanagerApiGatewayRequestException
+     * @throws Exception
      */
     public function update(StorePostNewClientRequest $request, string $clientId)
     {
         $validate = $request->validated();
         $validateForJsonApi = (new DataMapperClient($validate))->asArray();
 
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->put($clientId, $validateForJsonApi, 'client');
 
         return redirect()->route('dashboard');
@@ -129,10 +115,11 @@ class ClientController extends Controller
      * Remove the specified resource from storage.
      * @throws GuzzleException
      * @throws VetmanagerApiGatewayRequestException
+     * @throws Exception
      */
     public function destroy(string $clientId): RedirectResponse
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         (new VetmanagerApi($apiSetting->url, $apiSetting->key))->delete($clientId, 'client');
 
         return redirect()->route('dashboard');
@@ -141,10 +128,11 @@ class ClientController extends Controller
     /**
      * @throws VetmanagerApiGatewayException
      * @throws VetmanagerApiGatewayRequestException
+     * @throws Exception
      */
     public function search(Request $request)
     {
-        $apiSetting = $this->getApiSetting();
+        $apiSetting = (new UserApiSettings())->getApiSetting();
         $vetmanagerApi = (new DataVetmanagerApi($apiSetting->url, $apiSetting->key));
 
         $lastName = trim($request->lastName);
